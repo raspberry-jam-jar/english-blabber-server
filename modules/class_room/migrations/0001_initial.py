@@ -18,18 +18,40 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='LearningGroup',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID'
+                )),
                 ('description', models.TextField()),
             ],
         ),
         migrations.CreateModel(
             name='User',
             fields=[
-                ('user_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to=settings.AUTH_USER_MODEL)),
-                ('role', models.CharField(choices=[('admin', 'Admin'), ('teacher', 'Teacher'), ('student', 'Student')], max_length=250)),
-                ('date_of_birth', models.DateField(help_text='Set the date in the format YYYY-MM-DD or select the date.')),
-                ('image', models.ImageField(blank=True, null=True, upload_to='users/%Y/%m/%d/')),
-                ('learning_group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='users', to='class_room.LearningGroup')),
+                ('user_ptr', models.OneToOneField(
+                    auto_created=True,
+                    on_delete=django.db.models.deletion.CASCADE,
+                    parent_link=True, primary_key=True, serialize=False,
+                    to=settings.AUTH_USER_MODEL
+                )),
+                ('role', models.CharField(
+                    choices=[
+                        ('admin', 'Admin'), ('teacher', 'Teacher'),
+                        ('student', 'Student')
+                    ], max_length=250
+                )),
+                ('date_of_birth', models.DateField(
+                    help_text='Set the date in the format YYYY-MM-DD or '
+                              'select the date.'
+                )),
+                ('image', models.ImageField(
+                    blank=True, null=True, upload_to='users/%Y/%m/%d/'
+                )),
+                ('learning_group', models.ForeignKey(
+                    blank=True, null=True,
+                    on_delete=django.db.models.deletion.SET_NULL,
+                    related_name='users', to='class_room.LearningGroup'
+                )),
             ],
             options={
                 'verbose_name': 'user',

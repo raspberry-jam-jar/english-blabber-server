@@ -1,5 +1,4 @@
 from rest_framework import views, viewsets
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 import class_room.serializers as ser
@@ -8,6 +7,7 @@ from .models import SocialUser
 
 class SocialUserStatusView(views.APIView):
     def get(self, request, code, *args, **kwargs):
+        status_id = None
         try:
             social_user = SocialUser.objects.get(code=code)
         except SocialUser.DoesNotExist:

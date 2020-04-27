@@ -16,7 +16,9 @@ class User(DefaultUser):
     date_of_birth = models.DateField(
         help_text='Set the date in the format YYYY-MM-DD or select the date.'
     )
-    image = models.ImageField(upload_to='users/%Y/%m/%d/', null=True, blank=True)
+    image = models.ImageField(
+        upload_to='users/%Y/%m/%d/', null=True, blank=True
+    )
 
     learning_group = models.ForeignKey(
         'LearningGroup', on_delete=models.SET_NULL, related_name='users',

@@ -35,12 +35,15 @@ class GetSocialUserStatusTestCase(APITestCase):
             'last_name': Faker().last_name()
         }
 
-        response = self.client.post(f'/api/v1/apply/', data=data, format='json')
+        response = self.client.post('/api/v1/apply/', data=data,
+                                    format='json')
         self.assertEqual(response.status_code, 201)
 
-        social_users_qs = m.SocialUser.objects.filter(code=self.code, platform='vk')
+        social_users_qs = \
+            m.SocialUser.objects.filter(code=self.code, platform='vk')
 
         self.assertEqual(1, social_users_qs.count())
 
-        response = self.client.post(f'/api/v1/apply/', data=data, format='json')
+        response = self.client.post('/api/v1/apply/', data=data,
+                                    format='json')
         self.assertEqual(response.status_code, 400)

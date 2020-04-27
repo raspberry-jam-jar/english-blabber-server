@@ -14,13 +14,21 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SocialUser',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=150, verbose_name='User id at social platform')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID'
+                )),
+                ('code', models.CharField(
+                    max_length=150, verbose_name='User id at social platform'
+                )),
                 ('platform', models.CharField(default='vk', max_length=150)),
                 ('first_name', models.CharField(max_length=150)),
                 ('last_name', models.CharField(max_length=150)),
                 ('datetime_created', models.DateTimeField(auto_now=True)),
-                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='social_users', to='class_room.User')),
+                ('user', models.ForeignKey(
+                    null=True, on_delete=django.db.models.deletion.CASCADE,
+                    related_name='social_users', to='class_room.User'
+                )),
             ],
         ),
     ]

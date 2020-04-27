@@ -1,12 +1,10 @@
 from django.db import models
 
-from class_room.models import User
-
 
 class HeroClass(models.Model):
     name = models.CharField(max_length=500)
     parent = models.OneToOneField(
-        'HeroClass',  on_delete=models.SET_NULL, null=True, blank=True
+        'HeroClass', on_delete=models.SET_NULL, null=True, blank=True
     )
     capacity = models.FloatField(
         help_text='Points amount to move to the next hero class.'

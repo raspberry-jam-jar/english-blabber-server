@@ -15,15 +15,23 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Cristal',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID')
+                 ),
                 ('name', models.CharField(max_length=500)),
-                ('image', models.ImageField(blank=True, null=True, upload_to='cristal/')),
+                ('image', models.ImageField(
+                    blank=True, null=True, upload_to='cristal/')
+                 ),
             ],
         ),
         migrations.CreateModel(
             name='Penalty',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID'
+                )),
                 ('name', models.CharField(max_length=500)),
                 ('points_amount', models.FloatField()),
             ],
@@ -31,51 +39,88 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Skill',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID'
+                )),
                 ('name', models.CharField(max_length=500)),
                 ('description', models.TextField()),
-                ('cristal', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='game_skeleton.Cristal')),
+                ('cristal', models.OneToOneField(
+                    blank=True, null=True,
+                    on_delete=django.db.models.deletion.SET_NULL,
+                    to='game_skeleton.Cristal'
+                )),
             ],
         ),
         migrations.CreateModel(
             name='Rule',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                     auto_created=True, primary_key=True, serialize=False,
+                     verbose_name='ID'
+                 )),
                 ('name', models.CharField(max_length=500)),
-                ('skill', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='game_skeleton.Skill')),
+                ('skill', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to='game_skeleton.Skill'
+                )),
             ],
         ),
         migrations.CreateModel(
             name='HeroClass',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID'
+                )),
                 ('name', models.CharField(max_length=500)),
-                ('capacity', models.FloatField(help_text='Points amount to move to the next hero class.')),
-                ('image', models.ImageField(blank=True, null=True, upload_to='hero_class/')),
+                ('capacity', models.FloatField(
+                    help_text='Points amount to move to the next hero class.'
+                )),
+                ('image', models.ImageField(
+                    blank=True, null=True, upload_to='hero_class/'
+                )),
                 ('is_draft', models.BooleanField(default=True)),
-                ('parent', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='game_skeleton.HeroClass')),
+                ('parent', models.OneToOneField(
+                    blank=True, null=True,
+                    on_delete=django.db.models.deletion.SET_NULL,
+                    to='game_skeleton.HeroClass'
+                )),
             ],
         ),
         migrations.CreateModel(
             name='Gradation',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID'
+                )),
                 ('name', models.CharField(max_length=500)),
                 ('points_amount', models.FloatField()),
-                ('rule', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='game_skeleton.Rule')),
+                ('rule', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to='game_skeleton.Rule'
+                )),
             ],
         ),
         migrations.CreateModel(
             name='Gift',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID'
+                )),
                 ('name', models.CharField(max_length=500)),
-                ('image', models.ImageField(blank=True, null=True, upload_to='gifts/')),
+                ('image', models.ImageField(
+                    blank=True, null=True, upload_to='gifts/'
+                )),
                 ('remain', models.FloatField(blank=True, null=True)),
                 ('price', models.FloatField()),
                 ('is_group_wide', models.BooleanField(default=False)),
                 ('is_published', models.BooleanField(default=False)),
-                ('hero_class', models.ManyToManyField(related_name='gifts', to='game_skeleton.HeroClass')),
+                ('hero_class', models.ManyToManyField(
+                    related_name='gifts', to='game_skeleton.HeroClass'
+                )),
             ],
         ),
     ]
