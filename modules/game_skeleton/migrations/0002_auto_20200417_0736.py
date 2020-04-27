@@ -22,6 +22,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='gradation',
             name='rule',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='gradations', to='game_skeleton.Rule'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='gradations', to='game_skeleton.Rule'
+            ),
         ),
     ]

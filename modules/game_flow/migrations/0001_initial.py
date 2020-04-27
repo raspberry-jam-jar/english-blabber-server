@@ -18,27 +18,54 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserHero',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID'
+                )),
                 ('datetime_created', models.DateTimeField(auto_now=True)),
                 ('datetime_edited', models.DateTimeField(auto_now_add=True)),
-                ('datetime_finished', models.DateTimeField(blank=True, null=True)),
+                ('datetime_finished', models.DateTimeField(
+                    blank=True, null=True
+                )),
                 ('capacity', models.FloatField()),
-                ('hero_class', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='game_skeleton.HeroClass')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='heroes', to='class_room.User')),
+                ('hero_class', models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to='game_skeleton.HeroClass'
+                )),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='heroes', to='class_room.User'
+                )),
             ],
         ),
         migrations.CreateModel(
             name='EventHistory',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False,
+                    verbose_name='ID'
+                )),
                 ('points', models.FloatField()),
                 ('object_id', models.PositiveIntegerField()),
-                ('is_draft', models.BooleanField(default=False, help_text='Draft note does not participate in hero capacity calculation.')),
+                ('is_draft', models.BooleanField(
+                    default=False,
+                    help_text='Draft note does not participate in '
+                              'hero capacity calculation.'
+                )),
                 ('datetime_created', models.DateTimeField(auto_now=True)),
                 ('datetime_edited', models.DateTimeField(auto_now_add=True)),
-                ('author', models.OneToOneField(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='actions', to='class_room.User')),
-                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.ContentType')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='events', to='class_room.User')),
+                ('author', models.OneToOneField(
+                    null=True, on_delete=django.db.models.deletion.SET_NULL,
+                    related_name='actions', to='class_room.User'
+                )),
+                ('content_type', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    to='contenttypes.ContentType'
+                )),
+                ('user', models.OneToOneField(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='events', to='class_room.User'
+                )),
             ],
         ),
     ]

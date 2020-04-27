@@ -25,8 +25,8 @@ class LearningGroupAdmin(admin.ModelAdmin):
 class UserAdmin(admin.ModelAdmin):
     list_filter = ('role', 'learning_group')
 
-    fields = (('first_name', 'last_name'), 'username', 'email', 'date_of_birth',
-              'image', 'role', 'learning_group')
+    fields = (('first_name', 'last_name'), 'username', 'email',
+              'date_of_birth', 'image', 'role', 'learning_group')
     form = UserForm
 
     def save_model(self, request, obj, form, change):

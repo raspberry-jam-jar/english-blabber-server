@@ -35,7 +35,8 @@ class EventHistory(models.Model):
 
     is_draft = models.BooleanField(
         default=False,
-        help_text='Draft note does not participate in hero capacity calculation.'
+        help_text='Draft note does not participate in '
+                  'hero capacity calculation.'
     )
 
     datetime_created = models.DateTimeField(auto_now=True)
