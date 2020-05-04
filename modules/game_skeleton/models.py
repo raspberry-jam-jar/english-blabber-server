@@ -21,7 +21,10 @@ class HeroClass(models.Model):
 
 
 class Gift(models.Model):
-    hero_class = models.ManyToManyField('HeroClass', related_name='gifts')
+    hero_class = models.ForeignKey(
+        'HeroClass', on_delete=models.SET_NULL, related_name='gifts',
+        null=True,
+    )
 
     name = models.CharField(max_length=500)
     image = models.ImageField(upload_to='gifts/', null=True, blank=True)

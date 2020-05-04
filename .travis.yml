@@ -27,4 +27,4 @@ before_script:
 
 script:
   - python3 manage.py test
-  - flake8 modules/ tests/
+  - flake8 --exclude */migrations modules/
