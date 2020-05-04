@@ -16,6 +16,7 @@ class UserHero(models.Model):
     datetime_finished = models.DateTimeField(null=True, blank=True)
 
     capacity = models.FloatField()
+    wallet = models.DecimalField(max_digits=10, decimal_places=4, default=0.0)
 
 
 class EventHistory(models.Model):
@@ -26,8 +27,6 @@ class EventHistory(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='events'
     )
-    # If cost of the action will change it should not influence to the history
-    points = models.FloatField()
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()

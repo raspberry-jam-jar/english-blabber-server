@@ -7,7 +7,8 @@ class HeroClass(models.Model):
         'HeroClass', on_delete=models.SET_NULL, null=True, blank=True
     )
     capacity = models.FloatField(
-        help_text='Points amount to move to the next hero class.'
+        help_text='How many experience points should be collected '
+                  'to finish the hero class.'
     )
     image = models.ImageField(upload_to='hero_class/', null=True, blank=True)
     is_draft = models.BooleanField(default=True)
@@ -25,7 +26,7 @@ class Gift(models.Model):
     name = models.CharField(max_length=500)
     image = models.ImageField(upload_to='gifts/', null=True, blank=True)
     remain = models.FloatField(null=True, blank=True)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=10, decimal_places=4)
 
     is_group_wide = models.BooleanField(default=False)
     is_published = models.BooleanField(default=False)
@@ -63,7 +64,8 @@ class Rule(models.Model):
 
 class Gradation(models.Model):
     name = models.CharField(max_length=500)
-    points_amount = models.FloatField()
+    money = models.DecimalField(max_digits=10, decimal_places=4, default=0.0)
+    experience = models.FloatField()
     rule = models.ForeignKey(
         'Rule', on_delete=models.CASCADE, related_name='gradations'
     )
@@ -74,7 +76,7 @@ class Gradation(models.Model):
 
 class Penalty(models.Model):
     name = models.CharField(max_length=500)
-    points_amount = models.FloatField()
+    experience = models.FloatField()
 
     def __str__(self):
         return self.name
