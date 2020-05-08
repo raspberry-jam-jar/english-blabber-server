@@ -15,6 +15,6 @@
     cd english-blabber-server/docker
     docker-compose up -d
     ```
-    If you used default configuration server in now available at `https://0.0.0.0:8000`.
+    If you use default configuration server is now available at `https://0.0.0.0:8001`.
 
 Use `docker-compose down` command to stop containers.
