@@ -1,0 +1,28 @@
+version: "3.3"
+services:
+  blabber_server1:
+    build:
+      context: .
+    network_mode: "host"
+    environment:
+      - PORT=${PORT}
+      - DEBUG=${DEBUG}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - SECRET_KEY=${SECRET_KEY}
+      - EMAIL_HOST_PASSWORD=""
+      - EMAIL_HOST_USER=""
+  blabber_db:
+    network_mode: "host"
+    image: postgres:11
+    environment:
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - /srv/postgres-hf-data:/var/lib/postgresql/data
