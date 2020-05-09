@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from graphene_django.views import GraphQLView
 
 import class_room.urls
 
@@ -47,7 +48,8 @@ urlpatterns = [
     path(
         'api/v1/',
         include((class_room.urls, 'class_room'), namespace='class_room')
-    )
+    ),
+    path('graphql', GraphQLView.as_view(graphiql=True)),
 ]
 
 if settings.DEBUG:

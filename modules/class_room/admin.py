@@ -5,7 +5,6 @@ from .forms import UserForm
 
 
 admin.site.unregister(auth.models.Group)
-admin.site.unregister(auth.models.User)
 
 
 class UserInline(admin.TabularInline):

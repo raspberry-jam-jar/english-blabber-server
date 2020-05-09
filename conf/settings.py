@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from datetime import timedelta
 
 import environ
 
@@ -48,6 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'graphene_django',
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
     'rest_framework',
 
     'class_room',
@@ -63,6 +66,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 ROOT_URLCONF = 'urls'
@@ -136,6 +145,8 @@ STATIC_ROOT = env('STATIC_ROOT')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = env('MEDIA_ROOT')
 
+AUTH_USER_MODEL = 'class_room.User'
+
 
 # Django Rest Framework configs
 
@@ -146,6 +157,24 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
     'DEFAULT_PARSER_CLASSES': ('rest_framework.parsers.JSONParser',),
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',)
+}
+
+
+# GraghQL configs
+
+GRAPHENE = {
+    'SCHEMA': 'schema.schema',
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
+}
+
+GRAPHQL_JWT = {
+    'JWT_ALLOW_ARGUMENT': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+    'JWT_EXPIRATION_DELTA': timedelta(days=5),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
 
 
