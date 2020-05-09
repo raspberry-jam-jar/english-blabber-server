@@ -1,6 +1,6 @@
 import os
 
-from django.contrib.auth.models import User as DefaultUser
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
@@ -11,10 +11,11 @@ ROLE_CHOICES = (
 )
 
 
-class User(DefaultUser):
-    role = models.CharField(choices=ROLE_CHOICES, max_length=250)
+class User(AbstractUser):
+    role = models.CharField(choices=ROLE_CHOICES, max_length=250, null=True)
     date_of_birth = models.DateField(
-        help_text='Set the date in the format YYYY-MM-DD or select the date.'
+        help_text='Set the date in the format YYYY-MM-DD or select the date.',
+        null=True
     )
     image = models.ImageField(
         upload_to='users/%Y/%m/%d/', null=True, blank=True
