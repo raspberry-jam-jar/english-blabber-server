@@ -1,6 +1,6 @@
 # english-blabber-server
 
-### Installation
+### How to deploy server locally
 1. Clone the repository.
     ```bash
     https://github.com/raspberry-jam-jar/english-blabber-server.git --depth 1
