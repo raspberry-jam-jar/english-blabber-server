@@ -20,10 +20,21 @@ EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:=""}
 
 EMAIL_HOST_USER=${EMAIL_HOST_USER:=""}
 
+SUPERUSER_NAME=${SUPERUSER_NAME:="admin"}
+
+SUPERUSER_EMAIL=${SUPERUSER_EMAIL:="admin@mail.ru"}
+
+SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:=""}
+
 set +x
 
 if [ -z "${POSTGRES_PASSWORD}" ]; then
     >&2 echo "Postgres password is not specified"
+    exit 1
+fi
+
+if [ -z "${SUPERUSER_PASSWORD}" ]; then
+    >&2 echo "Superuser password is not specified"
     exit 1
 fi
 
@@ -39,6 +50,9 @@ output="$(PGPASSWORD="${POSTGRES_PASSWORD}" psql -h "${POSTGRES_HOST}" -p "${POS
 
 >&2 echo "Apply migrations"
 python manage.py migrate
+
+>&2 echo "Create superuser if do not exist"
+django_create_superuser.py
 
 >&2 echo "Collect static files"
 python manage.py collectstatic --noinput

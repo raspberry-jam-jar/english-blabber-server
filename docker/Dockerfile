@@ -36,7 +36,10 @@ RUN apk --update add \
  && rm -rf /var/cache/apk/*
 
 COPY ./docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
-RUN chmod +x /usr/bin/docker-entrypoint.sh
+COPY ./django_create_superuser.py /usr/bin/django_create_superuser.py
+
+RUN chmod +x /usr/bin/docker-entrypoint.sh \
+&& chmod +x /usr/bin/django_create_superuser.py
 
 WORKDIR /root/english-blabber-server/
 
