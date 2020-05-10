@@ -15,6 +15,7 @@
     cd english-blabber-server/docker
     docker-compose up -d
     ```
-    If you use default configuration server is now available at `https://0.0.0.0:8001`.
+    If you use default configuration server is now available at `https://0.0.0.0:8001`
+    and user `admin` with default password `pass` is created.
 
 Use `docker-compose down` command to stop containers.
