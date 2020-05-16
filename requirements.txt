@@ -1,5 +1,6 @@
 django==2.2.*
 djangorestframework==3.11.*
+django-cors-headers==3.2.*
 django-environ==0.4.*
 psycopg2-binary==2.8.*
 Pillow==7.1.*
