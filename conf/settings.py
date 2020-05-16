@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'corsheaders',
     'graphene_django',
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
     'rest_framework',
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -176,6 +178,9 @@ GRAPHQL_JWT = {
     'JWT_EXPIRATION_DELTA': timedelta(days=5),
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
+
+
+CORS_ORIGIN_WHITELIST = ['https://localhost:10888', ]
 
 
 EMAIL_HOST = 'smtp.gmail.com'
