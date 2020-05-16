@@ -38,6 +38,9 @@ if [ -z "${SUPERUSER_PASSWORD}" ]; then
     exit 1
 fi
 
+>&2 echo "Pull project"
+git pull
+
 export DATABASE_URL="psql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
 export PYTHONPATH="$PYTHONPATH:$(pwd)/modules:$(pwd)/conf"
 cp conf/.env.template conf/.env
