@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 from datetime import timedelta
 
+import django_heroku
 import environ
 
 
@@ -23,9 +24,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False),
-    STATIC_ROOT=(str, os.path.join(BASE_DIR, 'static')),
+    STATIC_ROOT=(str, os.path.join(BASE_DIR, 'staticfiles')),
     MEDIA_ROOT=(str, os.path.join(BASE_DIR, 'media')),
-    ALLOWED_HOST=(str, '*')
+    ALLOWED_HOST=(str, '*'),
+    CORS_ORIGIN_ITEM=(str, 'http://example.com'),
+    CORS_ORIGIN_ALLOW_ALL=(bool, False),
+    LOCAL_BUILD=(bool, False),
 )
 environ.Env.read_env()
 
@@ -179,8 +183,8 @@ GRAPHQL_JWT = {
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
 
-
-CORS_ORIGIN_WHITELIST = ['https://localhost:10888', ]
+CORS_ORIGIN_ALLOW_ALL = env('CORS_ORIGIN_ALLOW_ALL')
+CORS_ORIGIN_WHITELIST = [env('CORS_ORIGIN_ITEM'), ]
 
 
 EMAIL_HOST = 'smtp.gmail.com'
@@ -196,3 +200,6 @@ EMAIL_USE_TLS = True
 SERVER_EMAIL = EMAIL_HOST_USER
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+if not env('LOCAL_BUILD'):
+    django_heroku.settings(locals())

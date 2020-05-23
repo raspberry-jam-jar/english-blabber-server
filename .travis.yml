@@ -13,6 +13,7 @@ env:
     - DATABASE_URL=psql://postgres:@0.0.0.0:5432/blabber_test
     - EMAIL_HOST_PASSWORD=
     - EMAIL_HOST_USER=
+    - LOCAL_BUILD=on
 
 services:
   - postgresql
