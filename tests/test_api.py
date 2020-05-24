@@ -1,32 +1,11 @@
 from faker import Faker
 from rest_framework.test import APITestCase
 
-import tests.data_factories as factory
 from class_room import models as m
 
 
 class GetSocialUserStatusTestCase(APITestCase):
     code = '12345'
-
-    def test_new_user(self):
-        response = self.client.get(f'/api/v1/status/{self.code}/')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['status'], 'new')
-
-    def test_pending_user(self):
-        factory.SocialUserFactory(code=self.code)
-
-        response = self.client.get(f'/api/v1/status/{self.code}/')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['status'], 'pending')
-
-    def test_user(self):
-        user = factory.UserFactory()
-        factory.SocialUserFactory(code=self.code, user=user)
-
-        response = self.client.get(f'/api/v1/status/{self.code}/')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['status'], 'user')
 
     def test_apply_to_join(self):
         data = {

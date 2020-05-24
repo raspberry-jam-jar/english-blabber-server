@@ -1,11 +1,15 @@
 import time
 from datetime import timedelta
+from unittest import mock
 
 from django.conf import settings
 from django.test import override_settings
+from django.urls import reverse
+from helpers import generate_signature
+from rest_framework.test import APITestCase
 from graphql_jwt.testcases import JSONWebTokenTestCase
 
-from tests.data_factories import UserFactory
+from tests.data_factories import UserFactory, SocialUserFactory
 
 
 class BaseAuthTestCase(JSONWebTokenTestCase):
@@ -16,7 +20,8 @@ class BaseAuthTestCase(JSONWebTokenTestCase):
         self.user.set_password(self.plain_text_password)
         self.user.save()
 
-    def _get_tokens(self, password):
+    def _get_tokens(self, password, username=None):
+        username = username or self.user.username
         mutation = '''
             mutation TokenAuth($username: String!, $password: String!) {
                 tokenAuth(username: $username, password: $password) {
@@ -28,7 +33,7 @@ class BaseAuthTestCase(JSONWebTokenTestCase):
         '''
 
         variables = {
-            'username': self.user.username,
+            'username': username,
             'password': password
         }
 
@@ -66,6 +71,16 @@ class BaseAuthTestCase(JSONWebTokenTestCase):
 class UserAuthTestCase(BaseAuthTestCase):
     def test_get_tokens_with_right_credentials(self):
         response = self._get_tokens(password=self.plain_text_password)
+
+        self.assertFalse(response.errors)
+        self.assertTrue(response.data['tokenAuth'])
+
+    def test_get_tokens_with_right_credentials_for_social_user(self):
+        social_user = SocialUserFactory(code='12345', user=self.user)
+
+        response = self._get_tokens(
+            password=generate_signature(social_user), username=social_user.code
+        )
 
         self.assertFalse(response.errors)
         self.assertTrue(response.data['tokenAuth'])
@@ -133,3 +148,36 @@ class ExpiredRefreshTokenTestCase(BaseAuthTestCase):
 
         response = self._refresh_token(refresh_token=refresh_token)
         self.assertTrue(response.errors)
+
+
+class VkSocialUserAuthTestCase(APITestCase):
+    path = reverse('class_room:vk_auth')
+    social_user_code = '1'
+
+    def _make_request(self, valid=True, social_user_code=None):
+        code = social_user_code or self.social_user_code
+        with mock.patch('helpers.is_vk_signature_valid',
+                        mock.Mock(return_value=valid)):
+            return self.client.get(self.path+f'?vk_user_id={code}')
+
+    def test_vk_payload_is_invalid(self):
+        response = self._make_request(valid=False)
+        self.assertEqual(400, response.status_code)
+
+    def test_social_user_does_not_exist(self):
+        response = self._make_request()
+        self.assertEqual(403, response.status_code)
+
+    def test_social_user_is_not_associated(self):
+        SocialUserFactory(code=self.social_user_code)
+
+        response = self._make_request()
+        self.assertEqual(401, response.status_code)
+
+    def test_social_user_is_associated(self):
+        user = UserFactory(role='student')
+        SocialUserFactory(code=self.social_user_code, user=user)
+
+        response = self._make_request()
+        self.assertEqual(200, response.status_code)
+        self.assertIn('password', response.data.keys())

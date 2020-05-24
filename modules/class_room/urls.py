@@ -6,10 +6,7 @@ from class_room import views
 app_name = 'class_room'
 
 urlpatterns = [
-    path(
-        r'status/<str:code>/', views.SocialUserStatusView.as_view(),
-        name='social_user_status'
-    ),
     path(r'apply/', views.SocialUserViewSet.as_view({'post': 'create'}),
-         name='apply_to_join')
+         name='apply_to_join'),
+    path(r'vk_auth/', views.VkSocialUserAuth.as_view(), name='vk_auth'),
 ]

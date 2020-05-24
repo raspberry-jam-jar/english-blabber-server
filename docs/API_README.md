@@ -1,5 +1,6 @@
 ## API Docs
 
+## REST API
 ### Interface to send application
 To start to use the application user should apply for it and face with application administrator control.
 
@@ -24,17 +25,53 @@ Error Response:
 * How to solve:
     - check that your request provide correct param data
     - check user status, there is a probability that user already have applied
+    
+### Interface to obtain signature for vk app user
+When vk app is first time launched the request with parameters to check signature is sent.
+Client should redirect the request to the server to obtain social user signature.
 
-### Interface to get social user status
-
-| URI                               | Method | Authorization |
-|-----------------------------------|--------|---------------|
-|`api/v1/status/<social user id>/`  | `GET`  | not required  |
+| URI               | Method  | Authorization |
+|-------------------|---------|---------------|
+|`api/v1/vk_auth/`  | `GET`   | not required  |
 
 Success Response:
 * Code: 200
-* Content: `{"status": <status_id>}`, where `status_id` is the current status of the social user in the application.
-* Possible values of the `status_id`:
-    - `new` - the social user have not applied for join
-    - `pending` - the social user already had applied for join but application administrator have not linked him/her with a particular application user
-    - `user` -  the social user is the legitimate user of the application
+* Body:
+
+    ```
+    {
+      "password": [string]
+    }
+    ```
+
+Error Response:
+* Code: 400
+* How to solve: provide valid parameters.
+
+* Code: 401
+* How to solve: just wait until admin associate your social user with system one.
+
+* Code: 403
+* How to solve: send request to [apply to join](interface-to-send-application).
+
+
+## GraphQL API
+Notes: 
+- GraphQL API always return 200 status code even if contain errors. You need to check the response body.
+- All mutations are POST requests and queries - GET ones.
+
+### Interface to obtain tokens
+
+```
+mutation tokenAuth {
+  tokenAuth(username: "username", password: "password") {
+    token
+    refreshToken
+    refreshExpiresIn
+    payload
+  }
+}
+```
+If you need to obtain tokens for social user pass social user id as `username` and
+signature obtained on the [previous step](interface-to-obtain-signature-for-vk-app-user) 
+as `password`.

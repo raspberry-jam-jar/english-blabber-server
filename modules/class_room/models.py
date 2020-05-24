@@ -1,7 +1,9 @@
 import os
+from collections import OrderedDict
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 ROLE_CHOICES = (
@@ -53,6 +55,7 @@ class SocialUser(models.Model):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     datetime_created = models.DateTimeField(auto_now=True)
+    datetime_last_edited = models.DateTimeField(default=timezone.now)
 
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='social_users', null=True
@@ -61,6 +64,17 @@ class SocialUser(models.Model):
     @property
     def status(self):
         return 'pending' if not self.user else 'user'
+
+    @property
+    def payload(self):
+        return OrderedDict(
+            [
+                ('code', self.code),
+                ('platform', self.platform),
+                ('datetime_created', self.datetime_created),
+                ('datetime_last_edited', self.datetime_last_edited),
+            ]
+        )
 
     class Meta:
         unique_together = [['code', 'platform']]

@@ -14,6 +14,7 @@ env:
     - EMAIL_HOST_PASSWORD=
     - EMAIL_HOST_USER=
     - LOCAL_BUILD=on
+    - VK_CLIENT_SECRET=123
 
 services:
   - postgresql
