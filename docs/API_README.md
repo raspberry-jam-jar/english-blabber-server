@@ -75,3 +75,54 @@ mutation tokenAuth {
 If you need to obtain tokens for social user pass social user id as `username` and
 signature obtained on the [previous step](interface-to-obtain-signature-for-vk-app-user) 
 as `password`.
+
+### Gifts API
+Gifts are attached to the specific hero class.
+Gifts can be personal and group-wide. Group gift is available if it can be bought by 
+the student with the smallest coins quantity in the learning group.
+
+#### availableGifts
+
+Return available gifts for the student.
+
+| Type    | User type     | Authorization |
+|--------|---------------|---------------|
+| query | student only  | required      |
+
+Schema:
+```
+query availableGifts($token: String!){
+    availableGifts(token: $token) {
+        name
+        price
+        isGroupWide
+        remain
+        canBuy
+    }
+}
+```
+---
+#### availableForUserGifts
+
+Return available personal gifts for the specified student user.
+
+| Type    | User type      | Authorization |
+|--------|-----------------|---------------|
+| query | staff users only | required      |
+
+Arguments:
+* `userId` - id of the student
+
+Schema:
+
+```
+query availableForUserGifts($userId:Int!, $token: String!){
+    availableForUserGifts(userId: $userId, token: $token) {
+        name
+        price
+        isGroupWide
+        remain
+        canBuy
+    }
+}
+```

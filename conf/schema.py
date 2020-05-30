@@ -2,9 +2,10 @@ import graphene
 import graphql_jwt
 
 import class_room.schema
+import game_skeleton.schema
 
 
-class Query(class_room.schema.Query, graphene.ObjectType):
+class Query(class_room.schema.Query, game_skeleton.schema.Query, graphene.ObjectType):
     pass
 
 
