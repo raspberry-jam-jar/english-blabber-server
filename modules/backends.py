@@ -1,5 +1,3 @@
-from django.contrib.auth.backends import UserModel
-
 from class_room.models import SocialUser
 from helpers import validate_signature
 
@@ -19,7 +17,7 @@ class RemoteSocialUserBackend:
 
         try:
             social_user = SocialUser.objects.get(code=username)
-        except UserModel.DoesNotExist:
+        except SocialUser.DoesNotExist:
             return None
 
         signature_valid = validate_signature(password, social_user)
