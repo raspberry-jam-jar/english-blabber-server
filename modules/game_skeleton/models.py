@@ -20,6 +20,51 @@ class HeroClass(models.Model):
         verbose_name_plural = 'Hero classes'
 
 
+class GiftsManager(models.Manager):
+    def get_available(self, user):
+        gifts_qs = self.get_queryset() \
+            .exclude(is_published=False)\
+            .exclude(
+            hero_class_id__gt=user.hero.hero_class_id
+        )
+
+        if not user.learning_group:
+            gifts_qs = gifts_qs.exclude(is_group_wide=True)
+
+            gifts_qs = gifts_qs.annotate(
+                can_buy=models.Case(
+                    models.When(
+                        price__lte=user.hero.coins, then=True
+                    ),
+                    default=False, output_field=models.BooleanField()
+                )
+            )
+        else:
+            smallest_coins_quantity_in_group = \
+                user.learning_group.users\
+                .aggregate(
+                    smallest_coins_quantity=models.Min(
+                        'hero__coins', output_field=models.FloatField()
+                    )
+                )['smallest_coins_quantity']
+
+            gifts_qs = gifts_qs.annotate(
+                can_buy=models.Case(
+                    models.When(
+                        is_group_wide=False,
+                        price__lte=user.hero.coins, then=True
+                    ),
+                    models.When(
+                        is_group_wide=True,
+                        price__lte=smallest_coins_quantity_in_group, then=True
+                    ),
+                    default=False, output_field=models.BooleanField()
+                )
+            )
+
+        return gifts_qs
+
+
 class Gift(models.Model):
     hero_class = models.ForeignKey(
         'HeroClass', on_delete=models.SET_NULL, related_name='gifts',
@@ -33,6 +78,8 @@ class Gift(models.Model):
 
     is_group_wide = models.BooleanField(default=False)
     is_published = models.BooleanField(default=False)
+
+    objects = GiftsManager()
 
     def __str__(self):
         return self.name

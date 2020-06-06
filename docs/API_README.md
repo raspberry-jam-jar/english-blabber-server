@@ -75,3 +75,94 @@ mutation tokenAuth {
 If you need to obtain tokens for social user pass social user id as `username` and
 signature obtained on the [previous step](interface-to-obtain-signature-for-vk-app-user) 
 as `password`.
+
+### Gifts API
+Gifts are attached to the specific hero class.
+Gifts can be personal and group-wide. Group gift is available if it can be bought by 
+the student with the smallest coins quantity in the learning group.
+
+#### availableGifts
+
+##### Return available gifts for the student
+
+| Type    | User type     | Authorization |
+|--------|---------------|---------------|
+| query | student only  | required      |
+
+Schema:
+```
+query availableGifts($token: String!){
+    availableGifts(token: $token) {
+        name
+        price
+        isGroupWide
+        remain
+        canBuy
+    }
+}
+```
+---
+##### Return available personal gifts for the specified student user
+
+| Type    | User type      | Authorization |
+|--------|-----------------|---------------|
+| query | staff users only | required      |
+
+Arguments:
+* `userId` - id of the student
+
+Schema:
+
+```
+query availableGifts($userId:Int!, $token: String!){
+    availableGifts(userId: $userId, token: $token) {
+        name
+        price
+        isGroupWide
+        remain
+        canBuy
+    }
+}
+```
+
+##### Buy or use gift 
+
+| Type       | User type      | Authorization |
+|-----------|-----------------|---------------|
+| mutation | student only     | required      |
+
+Arguments:
+* `giftClassId` - id of the available gift
+* `quantity` - positive number for buying, negative - for using gift
+
+Schema:
+
+```
+mutation BuyOrUseUserGiftMutation($giftClassId:Int!, $quantity:Float!, $token: String!) {
+    buyOrUseGift(giftClassId: $giftClassId, quantity: $quantity, token: $token) {
+        userGift {
+            id
+        }
+    }
+}
+```
+
+##### Return user's hero backpack
+
+| Type    | User type      | Authorization |
+|--------|-----------------|---------------|
+| query | student only     | required      |
+
+
+Schema:
+
+```
+query HeroBackpack($token: String!){
+    heroBackpack(token: $token) {
+        giftClassName
+        quantity
+        datetimeEdited
+        datetimeCreated
+    }
+}
+```

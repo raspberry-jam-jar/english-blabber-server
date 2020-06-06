@@ -15,12 +15,13 @@ from tests.data_factories import UserFactory, SocialUserFactory
 class BaseAuthTestCase(JSONWebTokenTestCase):
     plain_text_password = 'new password'
 
-    def setUp(self):
-        self.user = UserFactory(role='teacher')
-        self.user.set_password(self.plain_text_password)
-        self.user.save()
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = UserFactory(role='teacher')
+        cls.user.set_password(cls.plain_text_password)
+        cls.user.save()
 
-    def _get_tokens(self, password, username=None):
+    def _get_tokens_data(self, password, username=None):
         username = username or self.user.username
         mutation = '''
             mutation TokenAuth($username: String!, $password: String!) {
@@ -38,6 +39,13 @@ class BaseAuthTestCase(JSONWebTokenTestCase):
         }
 
         return self.client.execute(mutation, variables)
+
+    def _get_token(self, username, password=None):
+        password = password or self.plain_text_password
+
+        tokens_data = self._get_tokens_data(username=username,
+                                            password=password)
+        return tokens_data.data['tokenAuth']['token']
 
     def _make_my_user_query(self, token=None):
         query = '''
@@ -70,7 +78,7 @@ class BaseAuthTestCase(JSONWebTokenTestCase):
 
 class UserAuthTestCase(BaseAuthTestCase):
     def test_get_tokens_with_right_credentials(self):
-        response = self._get_tokens(password=self.plain_text_password)
+        response = self._get_tokens_data(password=self.plain_text_password)
 
         self.assertFalse(response.errors)
         self.assertTrue(response.data['tokenAuth'])
@@ -78,7 +86,7 @@ class UserAuthTestCase(BaseAuthTestCase):
     def test_get_tokens_with_right_credentials_for_social_user(self):
         social_user = SocialUserFactory(code='12345', user=self.user)
 
-        response = self._get_tokens(
+        response = self._get_tokens_data(
             password=generate_signature(social_user), username=social_user.code
         )
 
@@ -86,13 +94,13 @@ class UserAuthTestCase(BaseAuthTestCase):
         self.assertTrue(response.data['tokenAuth'])
 
     def test_get_tokens_with_wrong_credentials(self):
-        response = self._get_tokens(password=f'{self.plain_text_password}_wrong')
+        response = self._get_tokens_data(password=f'{self.plain_text_password}_wrong')
 
         self.assertTrue(response.errors)
         self.assertFalse(response.data['tokenAuth'])
 
     def test_get_login_required_data_with_valid_token(self):
-        tokens_data = self._get_tokens(password=self.plain_text_password)
+        tokens_data = self._get_tokens_data(password=self.plain_text_password)
         token = tokens_data.data['tokenAuth']['token']
 
         response = self._make_my_user_query(token=token)
@@ -103,7 +111,7 @@ class UserAuthTestCase(BaseAuthTestCase):
     def test_get_login_required_data_with_expired_token(self):
         settings.GRAPHQL_JWT['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1)
 
-        tokens_data = self._get_tokens(password=self.plain_text_password)
+        tokens_data = self._get_tokens_data(password=self.plain_text_password)
         token = tokens_data.data['tokenAuth']['token']
 
         time.sleep(5)
@@ -115,7 +123,7 @@ class UserAuthTestCase(BaseAuthTestCase):
     def test_refresh_with_actual_token(self):
         settings.GRAPHQL_JWT['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1)
 
-        tokens_data = self._get_tokens(password=self.plain_text_password)
+        tokens_data = self._get_tokens_data(password=self.plain_text_password)
         refresh_token = tokens_data.data['tokenAuth']['refreshToken']
 
         time.sleep(5)
@@ -141,7 +149,7 @@ class UserAuthTestCase(BaseAuthTestCase):
 )
 class ExpiredRefreshTokenTestCase(BaseAuthTestCase):
     def test_refresh_with_expired_token(self):
-        tokens_data = self._get_tokens(password=self.plain_text_password)
+        tokens_data = self._get_tokens_data(password=self.plain_text_password)
         refresh_token = tokens_data.data['tokenAuth']['refreshToken']
 
         time.sleep(5)
