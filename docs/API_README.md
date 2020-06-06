@@ -83,7 +83,7 @@ the student with the smallest coins quantity in the learning group.
 
 #### availableGifts
 
-Return available gifts for the student.
+##### Return available gifts for the student
 
 | Type    | User type     | Authorization |
 |--------|---------------|---------------|
@@ -102,9 +102,7 @@ query availableGifts($token: String!){
 }
 ```
 ---
-#### availableForUserGifts
-
-Return available personal gifts for the specified student user.
+##### Return available personal gifts for the specified student user
 
 | Type    | User type      | Authorization |
 |--------|-----------------|---------------|
@@ -116,13 +114,55 @@ Arguments:
 Schema:
 
 ```
-query availableForUserGifts($userId:Int!, $token: String!){
-    availableForUserGifts(userId: $userId, token: $token) {
+query availableGifts($userId:Int!, $token: String!){
+    availableGifts(userId: $userId, token: $token) {
         name
         price
         isGroupWide
         remain
         canBuy
+    }
+}
+```
+
+##### Buy or use gift 
+
+| Type       | User type      | Authorization |
+|-----------|-----------------|---------------|
+| mutation | student only     | required      |
+
+Arguments:
+* `giftClassId` - id of the available gift
+* `quantity` - positive number for buying, negative - for using gift
+
+Schema:
+
+```
+mutation BuyOrUseUserGiftMutation($giftClassId:Int!, $quantity:Float!, $token: String!) {
+    buyOrUseGift(giftClassId: $giftClassId, quantity: $quantity, token: $token) {
+        userGift {
+            id
+        }
+    }
+}
+```
+
+##### Return user's hero backpack
+
+| Type    | User type      | Authorization |
+|--------|-----------------|---------------|
+| query | student only     | required      |
+
+
+Schema:
+
+```
+query HeroBackpack($token: String!){
+    heroBackpack(token: $token) {
+        giftClassName
+        quantity
+        datetimeEdited
+        datetimeCreated
     }
 }
 ```

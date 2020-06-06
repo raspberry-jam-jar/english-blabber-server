@@ -39,6 +39,14 @@ class User(AbstractUser):
 
         return deletion_info
 
+    @property
+    def hero(self):
+        return self.hero
+
+    @property
+    def is_student(self):
+        return True if self.role == 'student' else False
+
 
 class LearningGroup(models.Model):
     description = models.TextField()

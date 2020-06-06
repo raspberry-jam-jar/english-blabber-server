@@ -6,19 +6,19 @@ from class_room.models import User
 from game_skeleton.models import HeroClass, Gift
 
 
-# class UserGift(models.Model):
-#     gift_class = models.ForeignKey(
-#         Gift, on_delete=models.CASCADE, related_name='user_gifts'
-#     )
-#     quantity = models.PositiveIntegerField(default=1)
-#     datetime_created = models.DateTimeField(auto_now=True)
-#     datetime_edited = models.DateTimeField(auto_now_add=True)
-#     hero = models.ForeignKey(
-#         'UserHero', on_delete=models.CASCADE, related_name='gifts'
-#     )
-#
-#     def __str__(self):
-#         return self.gift_class.name
+class UserGift(models.Model):
+    gift_class = models.ForeignKey(
+        Gift, on_delete=models.CASCADE, related_name='user_gifts'
+    )
+    quantity = models.PositiveIntegerField(default=1)
+    datetime_created = models.DateTimeField(auto_now=True)
+    datetime_edited = models.DateTimeField(auto_now_add=True)
+    hero = models.ForeignKey(
+        'UserHero', on_delete=models.CASCADE, related_name='gifts'
+    )
+
+    def __str__(self):
+        return self.gift_class.name
 
 
 class UserHero(models.Model):
