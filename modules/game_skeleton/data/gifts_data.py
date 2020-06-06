@@ -1,6 +1,6 @@
 GIFT_DATA = [
     {
-        'hero_class_id': 1,
+        'hero_class_id': 6,
         'name': 'Подсказка на тесте от педагога',
         'remain': None,
         'price': 20,
@@ -8,7 +8,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 1,
+        'hero_class_id': 2,
         'name': 'Использование таблиц, словаря, правил на тесте',
         'remain': None,
         'price': 10,
@@ -16,7 +16,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 1,
+        'hero_class_id': 3,
         'name': 'Дополнительное время на тесте',
         'remain': None,
         'price': 15,
@@ -24,7 +24,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 1,
+        'hero_class_id': 4,
         'name': 'Помощь отличника, друга на тесте',
         'remain': None,
         'price': 15,
@@ -32,7 +32,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 1,
+        'hero_class_id': 3,
         'name': 'Индивидуальное занятие с педагогом',
         'remain': None,
         'price': 30,
@@ -40,7 +40,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 1,
+        'hero_class_id': 4,
         'name': 'Разговор с педагогом по-русски по душам',
         'remain': None,
         'price': 20,
@@ -48,7 +48,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 4,
+        'hero_class_id': 2,
         'name': '1 пропуск без причины не считается как пропуск',
         'remain': None,
         'price': 50,
@@ -104,7 +104,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 1,
+        'hero_class_id': 3,
         'name': 'Стажировка',
         'remain': None,
         'price': 100,
@@ -113,17 +113,9 @@ GIFT_DATA = [
     },
     {
         'hero_class_id': 1,
-        'name': 'Книга',
-        'remain': 3,
+        'name': 'Живые подарки: канцтовары, книги, сладости',
+        'remain': None,
         'price': 20,
-        'is_group_wide': False,
-        'is_published': True,
-    },
-    {
-        'hero_class_id': 1,
-        'name': 'Канцтовары',
-        'remain': 56,
-        'price': 10,
         'is_group_wide': False,
         'is_published': True,
     },
