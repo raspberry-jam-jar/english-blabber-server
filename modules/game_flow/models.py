@@ -7,7 +7,9 @@ from game_skeleton.models import HeroClass
 
 
 class UserHero(models.Model):
-    hero_class = models.OneToOneField(HeroClass, on_delete=models.CASCADE)
+    hero_class = models.ForeignKey(
+        HeroClass, on_delete=models.CASCADE, related_name='user_heroes'
+    )
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='heroes'
     )
@@ -15,8 +17,11 @@ class UserHero(models.Model):
     datetime_edited = models.DateTimeField(auto_now_add=True)
     datetime_finished = models.DateTimeField(null=True, blank=True)
 
-    capacity = models.FloatField()
+    capacity = models.FloatField(default=0)
     wallet = models.DecimalField(max_digits=10, decimal_places=4, default=0.0)
+
+    def __str__(self):
+        return self.hero_class.name
 
 
 class EventHistory(models.Model):
