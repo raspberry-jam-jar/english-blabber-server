@@ -89,6 +89,9 @@ the student with the smallest coins quantity in the learning group.
 |--------|---------------|---------------|
 | query | student only  | required      |
 
+Arguments:
+* `isGroupWide` - optional boolean argument, use it to filtrate output
+
 Schema:
 ```
 query availableGifts($token: String!){
@@ -110,6 +113,7 @@ query availableGifts($token: String!){
 
 Arguments:
 * `userId` - id of the student
+* `isGroupWide` - optional boolean argument, use it to filtrate output
 
 Schema:
 
