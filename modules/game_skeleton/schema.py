@@ -23,7 +23,7 @@ class GiftType(DjangoObjectType):
 class Query(graphene.ObjectType):
     available_gifts = graphene.List(
         GiftType, token=graphene.String(required=True),
-        user_id=graphene.Int()
+        user_id=graphene.Int(), is_group_wide=graphene.Boolean(),
     )
 
     @login_required
@@ -38,4 +38,15 @@ class Query(graphene.ObjectType):
         :return: gifts queryset
         """
 
-        return Gift.objects.get_available(user=User.objects.get(id=user_id))
+        available_gifts_qs = \
+            Gift.objects.\
+            get_available(user=User.objects.get(id=user_id)).\
+            order_by('price', 'name')
+
+        filter_is_group_wide = kwargs.get('is_group_wide')
+        if filter_is_group_wide is not None:
+            return available_gifts_qs.filter(
+                is_group_wide=filter_is_group_wide
+            )
+
+        return available_gifts_qs

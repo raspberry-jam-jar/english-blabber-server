@@ -32,7 +32,10 @@ class UserHeroType(DjangoObjectType):
         return self.hero_class.name
 
     def resolve_backpack(self, info):
-        return UserGift.objects.filter(hero=self)
+        return UserGift.objects.\
+            filter(hero=self).\
+            order_by('datetime_edited', 'gift_class__price',
+                     'gift_class__name')
 
 
 class BuyOrUseUserGiftMutation(graphene.Mutation):
@@ -112,4 +115,7 @@ class Query(graphene.ObjectType):
     @student_or_staff_member_required
     def resolve_hero_backpack(self, info, user_id, **kwargs):
         hero = UserHero.objects.get(user_id=user_id)
-        return UserGift.objects.filter(hero=hero)
+        return UserGift.objects.\
+            filter(hero=hero).\
+            order_by('datetime_edited', 'gift_class__price',
+                     'gift_class__name')
