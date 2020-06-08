@@ -38,6 +38,10 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(m.SocialUser)
 class SocialUserAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'user', 'datetime_created',
+                    'platform')
+    list_editable = ('user', )
+    list_filter = ('datetime_created', )
     fields = ('first_name', 'last_name', 'user',)
     readonly_fields = ('first_name', 'last_name',)
 
