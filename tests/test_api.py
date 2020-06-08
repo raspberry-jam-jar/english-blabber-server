@@ -28,7 +28,7 @@ class GetSocialUserStatusTestCase(APITestCase):
 
         response = self.client.post('/api/v1/apply/', data=data,
                                     format='json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
 
 
 class GetGiftsTestCase(BaseAuthTestCase):
