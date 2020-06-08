@@ -12,6 +12,17 @@ class SocialUserViewSet(viewsets.ModelViewSet):
     queryset = SocialUser
     serializer_class = ser.CreateSocialUserSerializer
 
+    def create(self, request, *args, **kwargs):
+        try:
+            SocialUser.objects.get(
+                code=request.data['code'],
+                platform=request.data.get('platform', 'vk')
+            )
+        except SocialUser.DoesNotExist:
+            return super().create(request, *args, **kwargs)
+        else:
+            return Response(status=status.HTTP_200_OK)
+
 
 class VkSocialUserAuth(views.APIView):
     def get(self,  request, *args, **kwargs):
