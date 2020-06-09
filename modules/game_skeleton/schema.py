@@ -22,8 +22,7 @@ class GiftType(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     available_gifts = graphene.List(
-        GiftType, token=graphene.String(required=True),
-        user_id=graphene.Int(), is_group_wide=graphene.Boolean(),
+        GiftType, user_id=graphene.Int(), is_group_wide=graphene.Boolean(),
     )
 
     @login_required
