@@ -198,4 +198,4 @@ class VkSocialUserAuthTestCase(APITestCase):
 
         response = self._make_request()
         self.assertEqual(200, response.status_code)
-        self.assertIn('password', response.data.keys())
+        self.assertIn('password', response.json().keys())

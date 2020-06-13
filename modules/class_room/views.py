@@ -1,4 +1,6 @@
-from rest_framework import views, viewsets, status
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django import http
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.utils import timezone
 
@@ -24,24 +26,30 @@ class SocialUserViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_200_OK)
 
 
-class VkSocialUserAuth(views.APIView):
-    def get(self,  request, *args, **kwargs):
-        code = request.GET.get('vk_user_id')
-        if not help.is_vk_signature_valid(query=request.GET.dict()) or \
-                code is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
-            try:
-                social_user = SocialUser.objects.get(code=code)
-            except SocialUser.DoesNotExist:
-                return Response(status=status.HTTP_403_FORBIDDEN)
+class HttpResponseUnauthorized(http.HttpResponse):
+    status_code = 401
 
-            if not social_user.user:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-            social_user.datetime_last_edited = timezone.now()
-            social_user.save()
+@ensure_csrf_cookie
+def vk_social_user_auth(request, *args, **kwargs):
+    if not request.method == 'GET':
+        return http.HttpResponseNotAllowed(['GET'])
+    code = request.GET.get('vk_user_id')
+    if not help.is_vk_signature_valid(query=request.GET.dict()) or \
+            code is None:
+        return http.HttpResponseBadRequest()
+    else:
+        try:
+            social_user = SocialUser.objects.get(code=code)
+        except SocialUser.DoesNotExist:
+            return http.HttpResponseForbidden()
 
-            return Response(
-                data={'password': help.generate_signature(social_user)}
-            )
+        if not social_user.user:
+            return HttpResponseUnauthorized()
+
+        social_user.datetime_last_edited = timezone.now()
+        social_user.save()
+
+        return http.JsonResponse(
+            data={'password': help.generate_signature(social_user)}
+        )
