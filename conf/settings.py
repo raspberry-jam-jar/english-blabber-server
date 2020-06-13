@@ -27,6 +27,7 @@ env = environ.Env(
     STATIC_ROOT=(str, os.path.join(BASE_DIR, 'staticfiles')),
     MEDIA_ROOT=(str, os.path.join(BASE_DIR, 'media')),
     ALLOWED_HOST=(str, '*'),
+    CSRF_TRUSTED_ORIGIN=(str, 'example.com'),
     CORS_ORIGIN_ITEM=(str, 'http://example.com'),
     CORS_ORIGIN_ALLOW_ALL=(bool, False),
     LOCAL_BUILD=(bool, False),
@@ -181,7 +182,7 @@ GRAPHQL_JWT = {
     'JWT_EXPIRATION_DELTA': timedelta(days=5),
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
-
+CSRF_TRUSTED_ORIGINS = [env('CSRF_TRUSTED_ORIGIN'), ]
 CORS_ORIGIN_ALLOW_ALL = env('CORS_ORIGIN_ALLOW_ALL')
 CORS_ORIGIN_WHITELIST = [env('CORS_ORIGIN_ITEM'), ]
 
