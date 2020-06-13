@@ -76,6 +76,15 @@ If you need to obtain tokens for social user pass social user id as `username` a
 signature obtained on the [previous step](interface-to-obtain-signature-for-vk-app-user) 
 as `password`.
 
+To send authorized request you should set the `Authorization` header:
+
+```
+POST / HTTP/1.1
+Host: some_host.com
+Authorization: JWT <token>
+Content-Type: application/json;
+```
+
 ### Gifts API
 Gifts are attached to the specific hero class.
 Gifts can be personal and group-wide. Group gift is available if it can be bought by 
@@ -94,8 +103,8 @@ Arguments:
 
 Schema:
 ```
-query availableGifts($token: String!){
-    availableGifts(token: $token) {
+query availableGifts {
+    availableGifts {
         name
         price
         isGroupWide
@@ -118,8 +127,8 @@ Arguments:
 Schema:
 
 ```
-query availableGifts($userId:Int!, $token: String!){
-    availableGifts(userId: $userId, token: $token) {
+query availableGifts($userId:Int!){
+    availableGifts(userId: $userId) {
         name
         price
         isGroupWide
@@ -142,8 +151,8 @@ Arguments:
 Schema:
 
 ```
-mutation BuyOrUseUserGiftMutation($giftClassId:Int!, $quantity:Float!, $token: String!) {
-    buyOrUseGift(giftClassId: $giftClassId, quantity: $quantity, token: $token) {
+mutation BuyOrUseUserGiftMutation($giftClassId:Int!, $quantity:Float!) {
+    buyOrUseGift(giftClassId: $giftClassId, quantity: $quantity) {
         userGift {
             id
         }
@@ -161,8 +170,8 @@ mutation BuyOrUseUserGiftMutation($giftClassId:Int!, $quantity:Float!, $token: S
 Schema:
 
 ```
-query HeroBackpack($token: String!){
-    heroBackpack(token: $token) {
+query HeroBackpack {
+    heroBackpack {
         giftClassName
         quantity
         datetimeEdited

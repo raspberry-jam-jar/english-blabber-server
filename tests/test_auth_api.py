@@ -5,6 +5,7 @@ from unittest import mock
 from django.conf import settings
 from django.test import override_settings
 from django.urls import reverse
+from graphql_jwt.settings import jwt_settings
 from helpers import generate_signature
 from rest_framework.test import APITestCase
 from graphql_jwt.testcases import JSONWebTokenTestCase
@@ -47,18 +48,16 @@ class BaseAuthTestCase(JSONWebTokenTestCase):
                                             password=password)
         return tokens_data.data['tokenAuth']['token']
 
-    def _make_my_user_query(self, token=None):
+    def _make_my_user_query(self):
         query = '''
-            query myUser($token: String!) {
-                myUser(token: $token) {
+            query myUser {
+                myUser {
                     username
                 }
             }
         '''
 
-        variables = {'token': token}
-
-        return self.client.execute(query, variables)
+        return self.client.execute(query)
 
     def _refresh_token(self, refresh_token):
         mutation = '''
@@ -74,6 +73,15 @@ class BaseAuthTestCase(JSONWebTokenTestCase):
         variables = {'refreshToken': refresh_token}
 
         return self.client.execute(mutation, variables)
+
+    def set_token(self, token):
+        self.client._credentials = {
+            jwt_settings.JWT_AUTH_HEADER_NAME: '{0} {1}'.format(
+                jwt_settings.JWT_AUTH_HEADER_PREFIX,
+                token
+                )
+        }
+        print(self.client._credentials)
 
 
 class UserAuthTestCase(BaseAuthTestCase):
@@ -103,7 +111,8 @@ class UserAuthTestCase(BaseAuthTestCase):
         tokens_data = self._get_tokens_data(password=self.plain_text_password)
         token = tokens_data.data['tokenAuth']['token']
 
-        response = self._make_my_user_query(token=token)
+        self.set_token(token)
+        response = self._make_my_user_query()
         self.assertFalse(response.errors)
         self.assertEqual(response.data['myUser']['username'], self.user.username)
 
@@ -113,10 +122,11 @@ class UserAuthTestCase(BaseAuthTestCase):
 
         tokens_data = self._get_tokens_data(password=self.plain_text_password)
         token = tokens_data.data['tokenAuth']['token']
+        self.set_token(token)
 
         time.sleep(5)
 
-        response = self._make_my_user_query(token=token)
+        response = self._make_my_user_query()
         self.assertTrue(response.errors)
 
     @override_settings()
@@ -133,14 +143,14 @@ class UserAuthTestCase(BaseAuthTestCase):
 
         refreshed_token = response.data['refreshToken']['token']
 
-        response = self._make_my_user_query(token=refreshed_token)
+        self.set_token(refreshed_token)
+        response = self._make_my_user_query()
         self.assertFalse(response.errors)
         self.assertEqual(response.data['myUser']['username'], self.user.username)
 
 
 @override_settings(
     GRAPHQL_JWT={
-        'JWT_ALLOW_ARGUMENT': True,
         'JWT_VERIFY_EXPIRATION': True,
         'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
         'JWT_EXPIRATION_DELTA': timedelta(seconds=1),

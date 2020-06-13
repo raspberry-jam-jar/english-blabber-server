@@ -43,7 +43,6 @@ class BuyOrUseUserGiftMutation(graphene.Mutation):
         gift_class_id = graphene.Int(required=True)
         quantity = graphene.Float(required=True)
         user_id = graphene.Int()
-        token = graphene.String()
 
     user_gift = graphene.Field(UserGiftType)
 
@@ -106,10 +105,7 @@ class BuyOrUseUserGiftMutation(graphene.Mutation):
 
 
 class Query(graphene.ObjectType):
-    hero_backpack = graphene.List(
-        UserGiftType, token=graphene.String(required=True),
-        user_id=graphene.Int()
-    )
+    hero_backpack = graphene.List(UserGiftType, user_id=graphene.Int())
 
     @login_required
     @student_or_staff_member_required

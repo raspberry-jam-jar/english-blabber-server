@@ -11,7 +11,7 @@ class UserType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    my_user = graphene.Field(UserType, token=graphene.String(required=True))
+    my_user = graphene.Field(UserType)
 
     @login_required
     def resolve_my_user(self, info, **kwargs):
