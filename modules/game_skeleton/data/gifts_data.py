@@ -1,6 +1,6 @@
 GIFT_DATA = [
     {
-        'hero_class_id': 6,
+        'hero_class_id': 4,
         'name': 'Подсказка на тесте от педагога',
         'remain': None,
         'price': 20,
@@ -8,7 +8,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 2,
+        'hero_class_id': 1,
         'name': 'Использование таблиц, словаря, правил на тесте',
         'remain': None,
         'price': 10,
@@ -16,7 +16,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 3,
+        'hero_class_id': 2,
         'name': 'Дополнительное время на тесте',
         'remain': None,
         'price': 15,
@@ -24,7 +24,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 4,
+        'hero_class_id': 3,
         'name': 'Помощь отличника, друга на тесте',
         'remain': None,
         'price': 15,
@@ -32,7 +32,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 3,
+        'hero_class_id': 2,
         'name': 'Индивидуальное занятие с педагогом',
         'remain': None,
         'price': 30,
@@ -40,7 +40,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 4,
+        'hero_class_id': 3,
         'name': 'Разговор с педагогом по-русски по душам',
         'remain': None,
         'price': 20,
@@ -48,7 +48,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 2,
+        'hero_class_id': 1,
         'name': '1 пропуск без причины не считается как пропуск',
         'remain': None,
         'price': 50,
@@ -56,7 +56,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 6,
+        'hero_class_id': 4,
         'name': 'Освобождение от промежуточного теста',
         'remain': None,
         'price': 50,
@@ -104,7 +104,7 @@ GIFT_DATA = [
         'is_published': True,
     },
     {
-        'hero_class_id': 3,
+        'hero_class_id': 2,
         'name': 'Стажировка',
         'remain': None,
         'price': 100,
