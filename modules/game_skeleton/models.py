@@ -1,3 +1,4 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 
@@ -12,12 +13,20 @@ class HeroClass(models.Model):
     )
     image = models.ImageField(upload_to='hero_class/', null=True, blank=True)
     is_draft = models.BooleanField(default=True)
+    skill_ids = ArrayField(models.PositiveIntegerField(), default=list)
 
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name_plural = 'Hero classes'
+
+
+class HeroSkill(models.Model):
+    name = models.CharField(max_length=500)
+
+    def __str__(self):
+        return self.name
 
 
 class GiftsManager(models.Manager):

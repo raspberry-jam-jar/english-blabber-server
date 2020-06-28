@@ -5,7 +5,7 @@ from django.db import migrations
 import game_skeleton.data as data
 
 
-MODEL_NAMES = ('HeroClass', 'Gift', 'Skill', 'Rule', 'Gradation', )
+MODEL_NAMES = ('HeroClass', 'Gift', 'Skill', 'Rule', 'Gradation', 'HeroSkill')
 
 
 def initiate_skeleton(apps, schema_editor):
@@ -34,7 +34,7 @@ def purge_skeleton_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('game_skeleton', '0001_initial'),
+        ('game_skeleton', '0002_add_hero_class_skill'),
     ]
 
     operations = [

@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('game_skeleton', '0002_data_migration'),
+        ('game_skeleton', '0003_data_migration'),
         ('game_flow', '0003_auto_20200530_1451'),
     ]
 
