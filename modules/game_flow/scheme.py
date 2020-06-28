@@ -26,10 +26,14 @@ class UserHeroType(DjangoObjectType):
         model = UserHero
 
     hero_class_name = graphene.String()
+    hero_class_level = graphene.Int()
     backpack = graphene.List(UserGiftType)
 
     def resolve_hero_class_name(self, info):
         return self.hero_class.name
+
+    def resolve_hero_class_level(self, info):
+        return self.hero_class.id
 
     def resolve_backpack(self, info):
         return UserGift.objects.\
