@@ -8,7 +8,12 @@ from graphql_jwt.decorators import login_required
 from class_room.models import User
 from decorators import student_or_staff_member_required
 from game_flow.models import UserGift, UserHero
-from game_skeleton.models import Gift
+from game_skeleton.models import Gift, HeroSkill
+
+
+class HeroSkillType(DjangoObjectType):
+    class Meta:
+        model = HeroSkill
 
 
 class UserGiftType(DjangoObjectType):
@@ -27,6 +32,7 @@ class UserHeroType(DjangoObjectType):
 
     hero_class_name = graphene.String()
     hero_class_level = graphene.Int()
+    hero_class_skills = graphene.List(of_type=HeroSkillType)
     backpack = graphene.List(UserGiftType)
 
     def resolve_hero_class_name(self, info):
@@ -34,6 +40,9 @@ class UserHeroType(DjangoObjectType):
 
     def resolve_hero_class_level(self, info):
         return self.hero_class.id
+
+    def resolve_hero_class_skills(self, info):
+        return HeroSkill.objects.filter(id__in=self.hero_class.skill_ids)
 
     def resolve_backpack(self, info):
         return UserGift.objects.\
