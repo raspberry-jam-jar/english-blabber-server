@@ -5,8 +5,11 @@ from django.db import migrations
 import game_skeleton.data as data
 
 
+MODEL_NAMES = ('HeroClass', 'Gift', 'Skill', 'Rule', 'Gradation', )
+
+
 def initiate_skeleton(apps, schema_editor):
-    for model_name in ('HeroClass', 'Gift', 'Skill', 'Rule', 'Gradation'):
+    for model_name in MODEL_NAMES:
         to_be_created = []
         model = apps.get_model('game_skeleton', model_name)
         instances_data = getattr(data, f'{model_name.upper()}_DATA')
@@ -18,6 +21,16 @@ def initiate_skeleton(apps, schema_editor):
         model.objects.bulk_create(to_be_created)
 
 
+def purge_skeleton_data(apps, schema_editor):
+    for model_name in MODEL_NAMES:
+        try:
+            model = apps.get_model('game_skeleton', model_name)
+        except LookupError:
+            continue
+        else:
+            model.objects.all().delete()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -25,5 +38,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(initiate_skeleton)
+        migrations.RunPython(initiate_skeleton, reverse_code=purge_skeleton_data)
     ]
