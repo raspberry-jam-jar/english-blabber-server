@@ -6,6 +6,16 @@ from class_room.models import User
 from game_skeleton.models import HeroClass, Gift
 
 
+class UserGiftManager(models.Manager):
+    def get_queryset(self):
+        bought_gifts = super().get_queryset().annotate(
+            name=models.F('gift_class__name'),
+            price=models.F('gift_class__price'),
+            image=models.F('gift_class__image'),
+        )
+        return bought_gifts
+
+
 class UserGift(models.Model):
     gift_class = models.ForeignKey(
         Gift, on_delete=models.CASCADE, related_name='user_gifts'
@@ -16,6 +26,8 @@ class UserGift(models.Model):
     hero = models.ForeignKey(
         'UserHero', on_delete=models.CASCADE, related_name='gifts'
     )
+
+    objects = UserGiftManager()
 
     def __str__(self):
         return self.gift_class.name
