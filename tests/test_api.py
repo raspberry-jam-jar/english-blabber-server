@@ -112,7 +112,7 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
         query = '''
         query HeroBackpack {
                 heroBackpack {
-                    giftClassName
+                    name
                     quantity
                 }
             }
@@ -225,10 +225,11 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
         self.assertFalse(response.errors)
 
         response = self._execute_hero_backpack_query()
+        print(response.errors)
         self.assertEqual(len(response.data['heroBackpack']), 1)
         self.assertDictEqual(
             response.data['heroBackpack'][0],
-            {'giftClassName': some_available_gift_class.name, 'quantity': 2}
+            {'name': some_available_gift_class.name, 'quantity': 2}
         )
 
         response = self._execute_buy_or_use_gift_mutation(
@@ -240,7 +241,7 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
         self.assertEqual(len(response.data['heroBackpack']), 1)
         self.assertDictEqual(
             response.data['heroBackpack'][0],
-            {'giftClassName': some_available_gift_class.name, 'quantity': 3}
+            {'name': some_available_gift_class.name, 'quantity': 3}
         )
 
     def test_attempt_to_use_unavailable_gift_by_student(self):

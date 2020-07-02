@@ -16,14 +16,25 @@ class HeroSkillType(DjangoObjectType):
         model = HeroSkill
 
 
-class UserGiftType(DjangoObjectType):
+class BoughtGiftType(DjangoObjectType):
+    name = graphene.String()
+    price = graphene.Float()
+    image = graphene.String()
+
     class Meta:
         model = UserGift
+        fields = '__all__'
 
     gift_class_name = graphene.String()
 
-    def resolve_gift_class_name(self, info):
-        return self.gift_class.name
+    def resolve_name(self, info):
+        return getattr(self, 'name', None)
+
+    def resolve_price(self, info):
+        return getattr(self, 'price', None)
+
+    def resolve_image(self, info):
+        return getattr(self, 'image', None)
 
 
 class UserHeroType(DjangoObjectType):
@@ -33,7 +44,7 @@ class UserHeroType(DjangoObjectType):
     hero_class_name = graphene.String()
     hero_class_level = graphene.Int()
     hero_class_skills = graphene.List(of_type=HeroSkillType)
-    backpack = graphene.List(UserGiftType)
+    backpack = graphene.List(BoughtGiftType)
 
     def resolve_hero_class_name(self, info):
         return self.hero_class.name
@@ -57,7 +68,7 @@ class BuyOrUseUserGiftMutation(graphene.Mutation):
         quantity = graphene.Float(required=True)
         user_id = graphene.Int()
 
-    user_gift = graphene.Field(UserGiftType)
+    user_gift = graphene.Field(BoughtGiftType)
 
     @staticmethod
     def _validate_availability(user_id, gift_class_id):
@@ -118,7 +129,7 @@ class BuyOrUseUserGiftMutation(graphene.Mutation):
 
 
 class Query(graphene.ObjectType):
-    hero_backpack = graphene.List(UserGiftType, user_id=graphene.Int())
+    hero_backpack = graphene.List(BoughtGiftType, user_id=graphene.Int())
 
     @login_required
     @student_or_staff_member_required
