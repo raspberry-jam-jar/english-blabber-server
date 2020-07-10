@@ -125,10 +125,13 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
         query {
             myUser{
                 hero {
-                    heroClassName
-                    heroClassLevel
-                    heroClassSkills {
+                    heroClass {
+                        capacity
                         name
+                        level
+                        skills {
+                            name
+                        }
                     }
                 }
             }
@@ -139,17 +142,17 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
 
     def test_get_user_hero_info(self):
         response = self._execute_my_user_query()
-        hero = response.data['myUser']['hero']
+        hero_class = response.data['myUser']['hero']['heroClass']
 
         self.assertEqual(
-            hero['heroClassName'], self.student.hero.hero_class.name
+            hero_class['name'], self.student.hero.hero_class.name
         )
         self.assertEqual(
-            hero['heroClassLevel'], self.student.hero.hero_class.id
+            hero_class['level'], self.student.hero.hero_class.id
         )
 
         self.assertCountEqual(
-            hero['heroClassSkills'],
+            hero_class['skills'],
             gm.HeroSkill.objects.
             filter(id__in=self.student.hero.hero_class.skill_ids).
             values('name')
