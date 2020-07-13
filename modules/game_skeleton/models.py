@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
@@ -30,7 +32,7 @@ class HeroSkill(models.Model):
 
 
 class GiftsManager(models.Manager):
-    def get_available(self, user):
+    def get_available(self, user, quantity=1):
         gifts_qs = self.get_queryset() \
             .exclude(is_published=False)\
             .exclude(
@@ -43,7 +45,7 @@ class GiftsManager(models.Manager):
             gifts_qs = gifts_qs.annotate(
                 can_buy=models.Case(
                     models.When(
-                        price__lte=user.hero.coins, then=True
+                        price__lte=user.hero.coins/quantity, then=True
                     ),
                     default=False, output_field=models.BooleanField()
                 )
@@ -53,7 +55,7 @@ class GiftsManager(models.Manager):
                 user.learning_group.users\
                 .aggregate(
                     smallest_coins_quantity=models.Min(
-                        'hero__coins', output_field=models.FloatField()
+                        'hero__coins', output_field=models.DecimalField()
                     )
                 )['smallest_coins_quantity']
 
@@ -61,11 +63,14 @@ class GiftsManager(models.Manager):
                 can_buy=models.Case(
                     models.When(
                         is_group_wide=False,
-                        price__lte=user.hero.coins, then=True
+                        price__lte=user.hero.coins/Decimal(quantity),
+                        then=True
                     ),
                     models.When(
                         is_group_wide=True,
-                        price__lte=smallest_coins_quantity_in_group, then=True
+                        price__lte=smallest_coins_quantity_in_group /
+                        Decimal(quantity),
+                        then=True
                     ),
                     default=False, output_field=models.BooleanField()
                 )

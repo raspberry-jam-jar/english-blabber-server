@@ -114,7 +114,7 @@ GIFT_DATA = [
     {
         'hero_class_id': 1,
         'name': 'Живые подарки: канцтовары, книги, сладости',
-        'remain': None,
+        'remain': 0,
         'price': 20,
         'is_group_wide': False,
         'is_published': True,

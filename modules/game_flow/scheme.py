@@ -1,14 +1,12 @@
 import graphene
-from django.core.exceptions import ValidationError
-
-from django.db import models, transaction
 from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import login_required
+from django.db import transaction
 
-from class_room.models import User
 from decorators import student_or_staff_member_required
+from game_flow.gift_strategies import GiftStrategy
 from game_flow.models import UserGift, UserHero
-from game_skeleton.models import Gift, HeroSkill, HeroClass
+from game_skeleton.models import HeroSkill, HeroClass
 
 
 class HeroSkillType(DjangoObjectType):
@@ -67,67 +65,17 @@ class UserHeroType(DjangoObjectType):
 class BuyOrUseUserGiftMutation(graphene.Mutation):
     class Arguments:
         gift_class_id = graphene.Int(required=True)
-        quantity = graphene.Float(required=True)
+        quantity = graphene.Int(required=True)
         user_id = graphene.Int()
 
     user_gift = graphene.Field(BoughtGiftType)
-
-    @staticmethod
-    def _validate_availability(user_id, gift_class_id):
-        available_gift_classes_ids = \
-            Gift.objects. \
-            get_available(user=User.objects.get(id=user_id)). \
-            values_list('id', flat=True)
-
-        if gift_class_id not in available_gift_classes_ids:
-            raise ValidationError(
-                'You try to buy unavailable for the hero gift'
-            )
-
-    @staticmethod
-    def _validate_is_in_backpack(quantity, user_gift_qs):
-        if quantity > 0:
-            return
-
-        if not user_gift_qs:
-            raise ValidationError(
-                'You try to use gift which is not in your backpack'
-            )
-
-    @staticmethod
-    def _validate_quantity(quantity, user_gift_qs):
-        if user_gift_qs.first().quantity + quantity < 0:
-            raise ValidationError('You try to use more then you have bought')
 
     @login_required
     @student_or_staff_member_required
     @transaction.atomic
     def mutate(self, info, gift_class_id, quantity, user_id, **kwargs):
-        # TODO add buy group gift
-
-        BuyOrUseUserGiftMutation._validate_availability(
-            user_id=user_id, gift_class_id=gift_class_id
-        )
-        hero = UserHero.objects.get(user_id=user_id)
-        user_gift_qs = \
-            UserGift.objects.select_for_update().\
-            filter(gift_class_id=gift_class_id, hero=hero)
-
-        BuyOrUseUserGiftMutation._validate_is_in_backpack(
-            user_gift_qs=user_gift_qs, quantity=quantity
-        )
-        if not user_gift_qs:
-            user_gift = UserGift.objects.create(gift_class_id=gift_class_id,
-                                                hero=hero, quantity=quantity)
-            return BuyOrUseUserGiftMutation(user_gift)
-
-        BuyOrUseUserGiftMutation._validate_quantity(user_gift_qs=user_gift_qs,
-                                                    quantity=quantity)
-        user_gift_qs.update(quantity=models.F('quantity')+quantity)
-        if not user_gift_qs.first().quantity:
-            user_gift_qs.delete()
-
-        return BuyOrUseUserGiftMutation(user_gift_qs.first())
+        gift_strategy = GiftStrategy.create(gift_class_id, quantity, user_id)
+        return gift_strategy.run()
 
 
 class Query(graphene.ObjectType):
