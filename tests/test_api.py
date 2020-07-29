@@ -42,6 +42,9 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
         for user in (cls.student, cls.teacher):
             user.set_password(cls.plain_text_password)
             user.save()
+
+        cls.student.hero.coins = 100
+        cls.student.hero.save()
             
     def setUp(self) -> None:
         self.client.authenticate(self.student)
@@ -78,7 +81,7 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
 
     def _execute_buy_or_use_gift_mutation(self, gift_class_id, quantity):
         mutation = '''
-            mutation BuyOrUseUserGiftMutation($giftClassId:Int!, $quantity:Float!){
+            mutation BuyOrUseUserGiftMutation($giftClassId:Int!, $quantity:Int!){
                 buyOrUseGift(giftClassId: $giftClassId, quantity: $quantity){
                     userGift {
                         id
@@ -93,7 +96,7 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
     def _execute_buy_or_use_gift_for_user_mutation(self, gift_class_id, quantity, 
                                                    user_id):
         mutation = '''
-            mutation BuyOrUseUserGiftMutation($giftClassId:Int!, $quantity:Float!, 
+            mutation BuyOrUseUserGiftMutation($giftClassId:Int!, $quantity:Int!, 
                                               $userId:Int!) {
                 buyOrUseGift(giftClassId: $giftClassId, quantity: $quantity,
                              userId: $userId,) {
@@ -201,7 +204,7 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
         )
         self.assertFalse(response.errors)
 
-    def test_buy_unavailable_gift_by_student(self):
+    def test_buy_unavailable_for_hero_gift_by_student(self):
         unavailable_gift_class = \
             gm.Gift.objects.\
             filter(hero_class_id__gt=self.student.hero.hero_class_id).\
@@ -212,23 +215,78 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
             gift_class_id=unavailable_gift_class.id, quantity=1
         )
         self.assertTrue(response.errors)
+        self.assertEqual(
+            'You try to buy unavailable for the hero gift',
+            response.errors[0].original_error.args[0]
+        )
 
         response = self._execute_hero_backpack_query()
         self.assertFalse(response.data['heroBackpack'])
 
-    def test_buy_available_gift_by_student(self):
+    def test_buy_too_expensive_gift_by_student(self):
+        self.student.hero.coins = 0
+        self.student.hero.save()
+
+        some_too_expensive_gift_class = \
+            gm.Gift.objects. \
+            filter(hero_class_id__lte=self.student.hero.hero_class_id). \
+            exclude(is_group_wide=True). \
+            exclude(price=0). \
+            first()
+
+        response = self._execute_buy_or_use_gift_mutation(
+            gift_class_id=some_too_expensive_gift_class.id, quantity=1
+        )
+
+        self.assertTrue(response.errors)
+        self.assertEqual(
+            'You have not enough money to buy it',
+            response.errors[0].original_error.args[0]
+        )
+
+    def test_buy_not_enough_remains_gift_by_student(self):
+        some_zero_remains_gift_class = \
+            gm.Gift.objects. \
+            filter(hero_class_id__lte=self.student.hero.hero_class_id, remain=0). \
+            first()
+
+        response = self._execute_buy_or_use_gift_mutation(
+            gift_class_id=some_zero_remains_gift_class.id, quantity=1
+        )
+
+        self.assertTrue(response.errors)
+        self.assertEqual(
+            'You try to buy gift which has not enough remains',
+            response.errors[0].original_error.args[0]
+        )
+
+    def test_buy_available_personal_gift_by_student(self):
+        gift_quantity_to_buy = 2
+
         some_available_gift_class = \
             gm.Gift.objects. \
             exclude(hero_class_id__gt=self.student.hero.hero_class_id). \
             exclude(is_group_wide=True). \
             first()
+
+        expected_decreased_hero_coins = \
+            self.student.hero.coins - \
+            some_available_gift_class.price*gift_quantity_to_buy
+
         response = self.buy_or_use_available_gift(
-            quantity=2, gift_class=some_available_gift_class
+            quantity=gift_quantity_to_buy, gift_class=some_available_gift_class
         )
+
+        self.student.refresh_from_db()
+
         self.assertFalse(response.errors)
+        self.assertEqual(
+            expected_decreased_hero_coins,
+            self.student.hero.coins
+        )
 
         response = self._execute_hero_backpack_query()
-        print(response.errors)
+
         self.assertEqual(len(response.data['heroBackpack']), 1)
         self.assertDictEqual(
             response.data['heroBackpack'][0],
