@@ -30,6 +30,9 @@ env = environ.Env(
     CORS_ORIGIN_ITEM=(str, 'http://example.com'),
     CORS_ORIGIN_ALLOW_ALL=(bool, False),
     LOCAL_BUILD=(bool, False),
+    JWT_EXPIRATION_DELTA_DAYS=(int, 5),
+    JWT_REFRESH_EXPIRATION_DELTA_DAYS=(int, 7),
+
 )
 environ.Env.read_env()
 
@@ -178,8 +181,10 @@ GRAPHENE = {
 GRAPHQL_JWT = {
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
-    'JWT_EXPIRATION_DELTA': timedelta(days=5),
-    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+    'JWT_EXPIRATION_DELTA': timedelta(days=env('JWT_EXPIRATION_DELTA_DAYS')),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(
+        days=env('JWT_REFRESH_EXPIRATION_DELTA_DAYS')
+    ),
 }
 
 CORS_ORIGIN_ALLOW_ALL = env('CORS_ORIGIN_ALLOW_ALL')
