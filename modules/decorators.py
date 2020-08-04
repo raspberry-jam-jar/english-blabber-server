@@ -1,4 +1,5 @@
-from graphql_jwt.exceptions import PermissionDenied
+from exceptions import PermissionDenied
+from graphql_jwt.decorators import user_passes_test
 
 
 def student_or_staff_member_required(method):
@@ -12,3 +13,7 @@ def student_or_staff_member_required(method):
 
         return method(instance, info, **kwargs)
     return wrapper
+
+
+login_required = user_passes_test(lambda u: u.is_authenticated,
+                                  exc=PermissionDenied)

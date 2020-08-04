@@ -1,9 +1,8 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from graphql_jwt.decorators import login_required
 from django.db import transaction
 
-from decorators import student_or_staff_member_required
+from decorators import student_or_staff_member_required, login_required
 from game_flow.gift_strategies import GiftStrategy
 from game_flow.models import UserGift, UserHero
 from game_skeleton.models import HeroSkill, HeroClass

@@ -1,9 +1,8 @@
 import graphene
 
 from graphene_django.types import DjangoObjectType
-from graphql_jwt.decorators import login_required
 
-from decorators import student_or_staff_member_required
+from decorators import student_or_staff_member_required, login_required
 from class_room.models import User
 from game_skeleton.models import Gift
 
