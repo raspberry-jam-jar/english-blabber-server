@@ -359,6 +359,7 @@ class TeacherDashboardTestCase(JSONWebTokenTestCase):
     @classmethod
     def setUpTestData(cls):
         students = UserFactory.create_batch(role='student', size=5)
+        cls.student = students[0]
         cls.teacher = UserFactory(role='teacher', is_staff=True)
 
         cls._create_learning_group(
@@ -375,6 +376,8 @@ class TeacherDashboardTestCase(JSONWebTokenTestCase):
             description='third learning group',
             participants=(students[4], )
         )
+
+        cls.some_gradation = gm.Gradation.objects.order_by('-experience').first()
 
     @staticmethod
     def _create_learning_group(description, participants):
@@ -400,8 +403,104 @@ class TeacherDashboardTestCase(JSONWebTokenTestCase):
 
         return self.client.execute(query)
 
+    def _execute_skills_query(self):
+        query = '''
+            query skills {
+                skills {
+                    name
+                    rules {
+                        name
+                        gradations {
+                            name
+                            money
+                            experience
+                        }
+                    }
+                }
+            }
+        '''
+
+        return self.client.execute(query)
+
+    def _execute_add_skills_mutation(self, gradation_id, user_id):
+        mutation = '''
+            mutation AddSkills($gradationId:Int!, $userId:Int!) {
+                addSkills(gradationId: $gradationId, userId: $userId) {
+                    hero {
+                        coins
+                        capacity
+                        heroClass {
+                            level
+                        }
+                    }
+                }
+            }
+        '''
+
+        variables = {'gradationId': gradation_id,
+                     'userId': user_id}
+        return self.client.execute(mutation, variables)
+
     def test_get_groups_list(self):
         response = self._execute_learning_groups_query()
 
         self.assertFalse(response.errors)
         self.assertEqual(2, len(response.data['learningGroups']))
+
+    def test_get_skills_list(self):
+        response = self._execute_skills_query()
+
+        self.assertFalse(response.errors)
+
+    def test_add_skills(self):
+        response = self._execute_add_skills_mutation(
+            gradation_id=self.some_gradation.id,
+            user_id=self.student.id
+        )
+
+        self.assertFalse(response.errors)
+        self.student.refresh_from_db()
+        self.assertEqual(self.some_gradation.money, self.student.hero.coins)
+        self.assertEqual(self.some_gradation.experience,
+                         self.student.hero.capacity)
+
+    def test_hero_level_upgrade(self):
+        current_hero_level = self.student.hero.hero_class.id
+        some_coins = 10
+        expected_coins = some_coins + self.some_gradation.money
+        self.student.hero.capacity = \
+            self.student.hero.hero_class.capacity - \
+            self.some_gradation.experience / 2
+        self.student.hero.coins = some_coins
+        self.student.hero.save()
+
+        response = self._execute_add_skills_mutation(
+            gradation_id=self.some_gradation.id,
+            user_id=self.student.id
+        )
+
+        self.assertFalse(response.errors)
+        self.student.refresh_from_db()
+        self.assertEqual(expected_coins, self.student.hero.coins)
+        self.assertEqual(self.some_gradation.experience / 2,
+                         self.student.hero.capacity)
+        self.assertEqual(current_hero_level + 1,
+                         self.student.hero.hero_class.id)
+
+    def test_hero_level_upgrade_for_last_hero_class(self):
+        final_hero_class = gm.HeroClass.objects.order_by('-id').first()
+        self.student.hero.hero_class = final_hero_class
+        self.student.hero.capacity = \
+            self.student.hero.hero_class.capacity - \
+            self.some_gradation.experience / 2
+        self.student.hero.save()
+
+        response = self._execute_add_skills_mutation(
+            gradation_id=self.some_gradation.id,
+            user_id=self.student.id
+        )
+
+        self.assertFalse(response.errors)
+        self.student.refresh_from_db()
+        self.assertEqual(final_hero_class.capacity,
+                         self.student.hero.capacity)

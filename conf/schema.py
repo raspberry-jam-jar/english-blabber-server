@@ -17,6 +17,7 @@ class Mutation(graphene.ObjectType):
     refresh_token = graphql_jwt.Refresh.Field()
     revoke_token = graphql_jwt.Revoke.Field()
     buy_or_use_gift = game_flow.scheme.BuyOrUseUserGiftMutation.Field()
+    add_skills = game_flow.scheme.AddSkillsMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

@@ -120,7 +120,9 @@ class Skill(models.Model):
 
 class Rule(models.Model):
     name = models.CharField(max_length=500)
-    skill = models.ForeignKey('Skill', on_delete=models.CASCADE)
+    skill = models.ForeignKey(
+        'Skill', on_delete=models.CASCADE, related_name='rules'
+    )
 
     def __str__(self):
         return self.name

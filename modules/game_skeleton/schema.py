@@ -1,11 +1,31 @@
 import graphene
 
 from graphene_django.types import DjangoObjectType
-from graphql_jwt.decorators import login_required
+from graphql_jwt.decorators import login_required, staff_member_required
 
 from decorators import student_or_staff_member_required
 from class_room.models import User
-from game_skeleton.models import Gift
+from game_skeleton.models import Gift, Skill, Rule, Gradation, Cristal
+
+
+class SkillType(DjangoObjectType):
+    class Meta:
+        model = Skill
+
+
+class RuleType(DjangoObjectType):
+    class Meta:
+        model = Rule
+
+
+class GradationType(DjangoObjectType):
+    class Meta:
+        model = Gradation
+
+
+class CristalType(DjangoObjectType):
+    class Meta:
+        model = Cristal
 
 
 class GiftType(DjangoObjectType):
@@ -24,6 +44,8 @@ class Query(graphene.ObjectType):
     available_gifts = graphene.List(
         GiftType, user_id=graphene.Int(), is_group_wide=graphene.Boolean(),
     )
+
+    skills = graphene.List(SkillType)
 
     @login_required
     @student_or_staff_member_required
@@ -49,3 +71,8 @@ class Query(graphene.ObjectType):
             )
 
         return available_gifts_qs
+
+    @login_required
+    @staff_member_required
+    def resolve_skills(self, info, **kwargs):
+        return Skill.objects.all()
