@@ -47,7 +47,8 @@ class UserHero(models.Model):
     coins = models.DecimalField(max_digits=10, decimal_places=4, default=0.0)
 
     def __str__(self):
-        return self.hero_class.name
+        return f'{self.hero_class.name} {self.user.first_name} ' \
+               f'{self.user.last_name}'
 
 
 class EventHistory(models.Model):
