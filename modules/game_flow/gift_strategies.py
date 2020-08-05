@@ -133,7 +133,7 @@ class BuyGroupGiftStrategy(CommonBuyGiftStrategy):
         # TODO проверить, что уровень пользователя позволяет покупать
         #  групповые подарки
         UserHero.objects. \
-            filter(user__learning_group=self.hero.user.learning_group,
+            filter(user__learning_groups__in=self.hero.user.learning_groups,
                    user__role='student'). \
             update(
                 coins=models.F('coins') -

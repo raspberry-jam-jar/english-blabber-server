@@ -179,3 +179,27 @@ query HeroBackpack {
     }
 }
 ```
+
+### Teacher Dashboard API
+
+##### Get list of the learning groups
+
+| Type    | User type      | Authorization |
+|--------|-----------------|---------------|
+| query | staff only      | required      |
+
+
+Schema:
+
+```
+query learningGroups {
+    learningGroups {
+        description
+        users {
+            id
+            role
+            first_name
+        }
+    }
+}
+```

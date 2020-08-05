@@ -353,3 +353,55 @@ class GetGiftsTestCase(JSONWebTokenTestCase):
         self.client.authenticate(self.student)
         response = self._execute_hero_backpack_query()
         self.assertEqual(len(response.data['heroBackpack']), 1)
+
+
+class TeacherDashboardTestCase(JSONWebTokenTestCase):
+    @classmethod
+    def setUpTestData(cls):
+        students = UserFactory.create_batch(role='student', size=5)
+        cls.teacher = UserFactory(role='teacher', is_staff=True)
+
+        cls._create_learning_group(
+            description='first learning group',
+            participants=(students[0], students[1], cls.teacher)
+        )
+
+        cls._create_learning_group(
+            description='second learning group',
+            participants=(students[2], students[3], cls.teacher)
+        )
+
+        cls._create_learning_group(
+            description='third learning group',
+            participants=(students[4], )
+        )
+
+    @staticmethod
+    def _create_learning_group(description, participants):
+        some_learning_group = \
+            cm.LearningGroup.objects.create(description=description)
+        some_learning_group.users.add(*participants)
+
+    def setUp(self) -> None:
+        self.client.authenticate(self.teacher)
+
+    def _execute_learning_groups_query(self):
+        query = '''
+            query learningGroups {
+                learningGroups {
+                    description
+                    users {
+                        id
+                        role
+                    }
+                }
+            }
+        '''
+
+        return self.client.execute(query)
+
+    def test_get_groups_list(self):
+        response = self._execute_learning_groups_query()
+
+        self.assertFalse(response.errors)
+        self.assertEqual(2, len(response.data['learningGroups']))
