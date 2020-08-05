@@ -75,14 +75,13 @@ class GiftTestCase(TestCase):
 
         some_learning_group = LearningGroup.objects.create(description='First group')
 
-        self.student.learning_group = some_learning_group
-        self.student.save()
+        self.student.learning_groups.add(some_learning_group)
 
         self.student.hero.coins = self.minimal_gift_price
         self.student.hero.save()
 
-        another_student = \
-            UserFactory(role='student', learning_group=some_learning_group)
+        another_student = UserFactory(role='student')
+        another_student.learning_groups.add(some_learning_group)
 
         available_gifts = Gift.objects.get_available(self.student)
         self.assertTrue(available_gifts.filter(is_group_wide=True).exists())
@@ -99,7 +98,7 @@ class GiftTestCase(TestCase):
 
         average_coins_quantity = \
             UserHero.objects. \
-            filter(user__learning_group=some_learning_group). \
+            filter(user__learning_groups__in=(some_learning_group, )). \
             aggregate(models.Avg('coins'))['coins__avg']
 
         for available_group_gift in new_available_gifts.filter(is_group_wide=True):

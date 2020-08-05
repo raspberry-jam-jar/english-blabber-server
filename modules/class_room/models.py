@@ -23,11 +23,6 @@ class User(AbstractUser):
         upload_to='users/%Y/%m/%d/', null=True, blank=True
     )
 
-    learning_group = models.ForeignKey(
-        'LearningGroup', on_delete=models.SET_NULL, related_name='users',
-        null=True, blank=True
-    )
-
     def __str__(self):
         return f'{self.get_full_name()} {self.role}'
 
@@ -47,9 +42,14 @@ class User(AbstractUser):
     def is_student(self):
         return True if self.role == 'student' else False
 
+    @property
+    def is_teacher(self):
+        return True if self.role == 'teacher' else False
+
 
 class LearningGroup(models.Model):
     description = models.TextField()
+    users = models.ManyToManyField(User, related_name='learning_groups')
 
     def __str__(self):
         return self.description[:50]

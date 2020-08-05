@@ -179,3 +179,75 @@ query HeroBackpack {
     }
 }
 ```
+
+### Teacher Dashboard API
+
+##### Get list of the learning groups
+
+| Type    | User type      | Authorization |
+|--------|-----------------|---------------|
+| query | staff only      | required      |
+
+
+Schema:
+
+```
+query learningGroups {
+    learningGroups {
+        description
+        users {
+            id
+            role
+            first_name
+        }
+    }
+}
+```
+
+##### Get list of the skills
+
+| Type    | User type      | Authorization |
+|--------|-----------------|---------------|
+| query | staff only      | required      |
+
+
+Schema:
+
+```
+query skills {
+    skills {
+        name
+        rules {
+            name
+            gradations {
+                name
+                money
+                experience
+            }
+        }
+    }
+}
+```
+
+##### Add skills to the user's hero
+
+| Type     | User type       | Authorization |
+|----------|-----------------|---------------|
+| mutation | staff only      | required      |
+
+
+Schema:
+
+```
+mutation AddSkills($gradationId:Int!, $userId:Int!) {
+    addSkills(gradationId: $gradationId, userId: $userId) {
+        hero {
+            coins
+            capacity
+            heroClass {
+                level
+            }
+        }
+    }
+}
+```

@@ -1,12 +1,12 @@
 import graphene
 from graphene_django.types import DjangoObjectType
-from graphql_jwt.decorators import login_required
+from graphql_jwt.decorators import login_required, staff_member_required
 from django.db import transaction
 
 from decorators import student_or_staff_member_required
 from game_flow.gift_strategies import GiftStrategy
 from game_flow.models import UserGift, UserHero
-from game_skeleton.models import HeroSkill, HeroClass
+from game_skeleton.models import HeroSkill, HeroClass, Gradation
 
 
 class HeroSkillType(DjangoObjectType):
@@ -76,6 +76,38 @@ class BuyOrUseUserGiftMutation(graphene.Mutation):
     def mutate(self, info, gift_class_id, quantity, user_id, **kwargs):
         gift_strategy = GiftStrategy.create(gift_class_id, quantity, user_id)
         return gift_strategy.run()
+
+
+class AddSkillsMutation(graphene.Mutation):
+    class Arguments:
+        gradation_id = graphene.Int(required=True)
+        user_id = graphene.Int()
+
+    hero = graphene.Field(UserHeroType)
+
+    @login_required
+    @staff_member_required
+    @transaction.atomic
+    def mutate(self, info, gradation_id, user_id, **kwargs):
+        hero = UserHero.objects.select_for_update().get(user_id=user_id)
+        gradation = Gradation.objects.get(id=gradation_id)
+
+        hero.coins += gradation.money
+
+        raised_capacity = hero.capacity + gradation.experience
+        if raised_capacity > hero.hero_class.capacity:
+            next_hero_class_qs = \
+                HeroClass.objects.filter(parent=hero.hero_class)
+            if next_hero_class_qs.exists():
+                hero.hero_class = next_hero_class_qs.first()
+                hero.capacity = raised_capacity - hero.hero_class.capacity
+            else:
+                hero.capacity = hero.hero_class.capacity
+        else:
+            hero.capacity = raised_capacity
+
+        hero.save()
+        return hero
 
 
 class Query(graphene.ObjectType):

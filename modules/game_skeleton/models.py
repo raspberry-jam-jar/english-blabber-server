@@ -39,7 +39,7 @@ class GiftsManager(models.Manager):
             hero_class_id__gt=user.hero.hero_class_id
         )
 
-        if not user.learning_group:
+        if not user.learning_groups.exists():
             gifts_qs = gifts_qs.exclude(is_group_wide=True)
 
             gifts_qs = gifts_qs.annotate(
@@ -52,7 +52,7 @@ class GiftsManager(models.Manager):
             )
         else:
             smallest_coins_quantity_in_group = \
-                user.learning_group.users\
+                user.learning_groups.first().users\
                 .aggregate(
                     smallest_coins_quantity=models.Min(
                         'hero__coins', output_field=models.DecimalField()
@@ -120,7 +120,9 @@ class Skill(models.Model):
 
 class Rule(models.Model):
     name = models.CharField(max_length=500)
-    skill = models.ForeignKey('Skill', on_delete=models.CASCADE)
+    skill = models.ForeignKey(
+        'Skill', on_delete=models.CASCADE, related_name='rules'
+    )
 
     def __str__(self):
         return self.name
