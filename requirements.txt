@@ -1,6 +1,11 @@
+attrs==19.3.*
+graphql-core<3
+channels==2.4.*
+channels_redis==3.0.*
 django==2.2.*
 djangorestframework==3.11.*
 django-cors-headers==3.2.*
+django-channels-graphql-ws==0.7.*
 django-environ==0.4.*
 django-heroku==0.3.*
 psycopg2-binary==2.8.*

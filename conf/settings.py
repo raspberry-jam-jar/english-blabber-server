@@ -32,7 +32,7 @@ env = environ.Env(
     LOCAL_BUILD=(bool, False),
     JWT_EXPIRATION_DELTA_DAYS=(int, 5),
     JWT_REFRESH_EXPIRATION_DELTA_DAYS=(int, 7),
-
+    DATABASE_OPTIONS=(str, '')
 )
 environ.Env.read_env()
 
@@ -57,10 +57,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'corsheaders',
+    'channels',
     'graphene_django',
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
     'rest_framework',
 
+    'chat',
     'class_room',
     'game_skeleton',
     'game_flow',
@@ -108,7 +110,8 @@ WSGI_APPLICATION = 'wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db()
+    'default': env.db('DATABASE_URL_RESULT',
+                      default=f'{env("DATABASE_URL")}?{env("DATABASE_OPTIONS")}')
 }
 
 
@@ -169,6 +172,18 @@ REST_FRAMEWORK = {
 }
 
 
+# Channels
+
+ASGI_APPLICATION = 'routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [env('REDIS_URL'), ],
+        },
+    },
+}
+
 # GraghQL configs
 
 GRAPHENE = {
@@ -176,6 +191,7 @@ GRAPHENE = {
     'MIDDLEWARE': [
         'graphql_jwt.middleware.JSONWebTokenMiddleware',
     ],
+    "SUBSCRIPTION_PATH": '/ws/graphql/',
 }
 
 GRAPHQL_JWT = {

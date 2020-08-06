@@ -28,6 +28,7 @@ class UserAdmin(admin.ModelAdmin):
 
     fields = (('first_name', 'last_name'), 'username', 'email',
               'date_of_birth', 'image', 'role', )
+    readonly_fields = ('id', )
     inlines = [UserInline, ]
     form = UserForm
 

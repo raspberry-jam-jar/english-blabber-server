@@ -13,6 +13,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import pathlib
+
+import django
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
@@ -24,7 +27,16 @@ from graphene_django.views import GraphQLView
 import class_room.urls
 
 
+def graphiql(request):
+    """Trivial view to serve the `graphiql.html` file."""
+    del request
+    graphiql_filepath = pathlib.Path(__file__).absolute().parent / "graphiql.html"
+    with open(graphiql_filepath) as f:
+        return django.http.response.HttpResponse(f.read())
+
+
 urlpatterns = [
+    path("", graphiql),
     path('admin/', admin.site.urls),
     path(
         'admin/password_reset/',
