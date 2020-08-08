@@ -35,12 +35,30 @@ class OnNewChatMessage(channels_graphql_ws.Subscription):
 
 
 class Query(graphene.ObjectType):
-    chatroom_history = graphene.List(MessageType, chatroom_id=graphene.String())
+    chatroom_history = graphene.List(MessageType,
+                                     chatroom_id=graphene.String(
+                                         required=True
+                                     ),
+                                     batch_size=graphene.Int(),
+                                     datetime_cursor=graphene.String())
 
     def resolve_chatroom_history(self, _, chatroom_id, **kwargs):
-        return Message.objects.\
+        messages_qs =\
+            Message.objects.\
             filter(chatroom_id=chatroom_id).\
             order_by('datetime_created')
+
+        if kwargs.get('datetime_cursor'):
+            messages_qs = \
+                messages_qs.\
+                filter(datetime_created__lt=kwargs['datetime_cursor'])
+
+        if kwargs.get('batch_size'):
+            crop_index = messages_qs.count() - kwargs['batch_size']
+            if crop_index > 0:
+                messages_qs = messages_qs[crop_index:]
+
+        return messages_qs
 
 
 class SendMessageMutation(graphene.Mutation):
